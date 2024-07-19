@@ -1,0 +1,142 @@
+<?php
+
+namespace App\Http\Controllers\Client;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
+use App\Models\User;
+use App\Http\Requests\Clients\CreateClientRequest;
+use App\Http\Requests\Clients\EditClientRequest;
+use App\Http\Resources\Users\UserResource;
+use App\Notifications\UserCreationNotification;
+
+class ClientController extends Controller
+{
+    function __construct(User $userModel)
+    {
+        $this->model = $userModel;
+    }
+
+    public function index()
+    {
+        Gate::authorize('pilots-clients:read');
+
+        $order_by = request("order_by", "id");
+        $limit = request("limit", "10");
+        $page = request("page", "1");
+        $search = request("search", "");
+        $group = request("group", "all");
+
+        $data = $this->model
+            ->withTrashed()
+            ->where('tenant_id', session('tenant_id'))
+            ->where("role", "cliente")
+            ->filter($group) // scope
+            ->search($search) // scope
+            ->orderBy($order_by)
+            ->paginate((int) $limit, $columns = ['*'], $pageName = 'clients', (int) $page);
+
+        return Inertia::render("Authenticated/Users/Clients/Index", [
+            "data" => new UserResource($data),
+            "queryParams" => request()->query() ?: null,
+            "success" => session('success'),
+        ]);
+    }
+
+    public function create()
+    {
+        Gate::authorize('pilots-clients:write');
+
+        return Inertia::render("Authenticated/Users/Clients/CreateClient");
+    }
+
+    public function store(CreateClientRequest $request)
+    {
+        Gate::authorize('pilots-clients:write');
+
+        $client = $this->model->create([
+            ...$request->validated(),
+            "role" => "cliente",
+            "tenant_id" => session("tenant_id"),
+            'public_id' => Str::uuid(),
+        ]);
+
+        $client->address()->create();
+        $client->document()->create();
+        $client->contact()->create();
+
+        event(new Registered($client));
+        //$client->notify(new UserCreationNotification($request->password));
+
+        return redirect()->route('clients.index', ['search' => $client->public_id->toString()])
+            ->with('success', 'Cliente criado!');
+    }
+
+    public function show(string $id)
+    {
+        Gate::authorize('pilots-clients:write');
+
+        $client = $this->model->withTrashed()->where("public_id", $id)->first();
+
+        return Inertia::render("Authenticated/Users/Clients/ShowClient", [
+            "user" => [
+                "id" => $client->public_id,
+                "name" => $client->name,
+                "role" => $client->role,
+                "email" => $client->email,
+                "status" => $client->trashed() ? "Deletado" : ($client->status ? "Ativo" : "Inativo"),
+                "created_at" => $client->created_at->format('d/m/Y'),
+                "updated_at" => $client->updated_at->format('d/m/Y'),
+                "deleted_at" => $client->deleted_at
+            ]
+        ]);
+    }
+
+    public function edit(string $id)
+    {
+        Gate::authorize('pilots-clients:write');
+
+        $client = $this->model->withTrashed()->where("public_id", $id)->first();
+
+        return Inertia::render("Authenticated/Users/Clients/EditClient", [
+            "user" => [
+                "id" => $client->public_id,
+                "name" => $client->name,
+                "email" => $client->email,
+                "role" => $client->role
+            ]
+        ]);
+    }
+
+    public function update(EditClientRequest $request, string $id)
+    {
+        Gate::authorize('pilots-clients:write');
+
+        $client = $this->model->withTrashed()->where("public_id", $id)->first();
+        $client->update($request->validated());
+
+        return redirect()->route('clients.index', ['search' => $client->public_id])
+            ->with('success', "Cliente editado!");
+    }
+
+    public function destroy()
+    {
+        Gate::authorize('pilots-clients:write');
+
+        $ids = explode(",", request("ids"));
+
+        DB::transaction(function () use ($ids) {
+            $users = $this->model->where("public_id", $ids)->get();
+            foreach ($users as $client) {
+                $client->delete();
+            }
+        });
+
+        return to_route('clients.index')
+            ->with('success', "Cliente(s) deletado(s)!");
+    }
+}
