@@ -21,7 +21,7 @@ Route::redirect("/", "/login");
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Admin
-    Route::resource("managers", ManagerController::class)->parameters(['managers' => 'tenant'])->names('managers');
+    Route::resource("managers", ManagerController::class)->names('managers');
     // Users
     Route::resource("pilots", PilotController::class)->names('pilots');
     Route::resource("clients", ClientController::class)->names('clients');

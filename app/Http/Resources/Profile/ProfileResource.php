@@ -25,23 +25,23 @@ class ProfileResource extends JsonResource
                 "role" => $this->role,
             ],
             "documents" => [
-                "cpf" => (string) $this->profile->document->cpf,
-                "cnpj" => (string) $this->profile->document->cnpj,
-                "company_name" => (string) $this->profile->document->company_name,
-                "trading_name" => (string) $this->profile->document->trading_name,
-                "license_anac" => (string) $this->profile->document->anac_license
+                "cpf" => (string) $this->document->cpf,
+                "cnpj" => (string) $this->document->cnpj,
+                "company_name" => (string) $this->document->company_name,
+                "trading_name" => (string) $this->document->trading_name,
+                "license_anac" => (string) $this->document->anac_license
             ],
             "address" => [
-                "zip_code" => (string) $this->profile->address->zip_code,
-                "city" => (string) $this->profile->address->city,
-                "state" => (string) $this->profile->address->state,
-                "neighborhood" => (string) $this->profile->address->neighborhood,
-                "street_name" => (string) $this->profile->address->street_name,
-                "number" => (string) $this->profile->address->number
+                "zip_code" => (string) $this->address->zip_code,
+                "city" => (string) $this->address->city,
+                "state" => (string) $this->address->state,
+                "neighborhood" => (string) $this->address->neighborhood,
+                "street_name" => (string) $this->address->street_name,
+                "number" => (string) $this->address->number
             ],
             "contact" => [
-                "phone_number" => (string) $this->profile->contact->phone_number,
-                "ddd" => (string) $this->profile->contact->ddd,
+                "number" => (string) $this->contact->number,
+                "ddd" => (string) $this->contact->ddd,
             ]
         ];
     }

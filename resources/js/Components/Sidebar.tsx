@@ -220,7 +220,7 @@ export const Sidebar = React.memo(() => {
                         </div>
                     </li>
                     <SidebarItem href="/profile" icon={UserCircleIcon} label="Minha Conta" />
-                    <SidebarItem method="post" href="/auth/logout" icon={ArrowLeftOnRectangleIcon} label="Sair" />
+                    <SidebarItem method="post" href={route('logout')} icon={ArrowLeftOnRectangleIcon} label="Sair" />
                 </ul>
             </div>
         </aside>

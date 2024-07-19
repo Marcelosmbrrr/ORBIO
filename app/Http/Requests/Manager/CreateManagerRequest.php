@@ -34,6 +34,7 @@ class CreateManagerRequest extends FormRequest
     {
         return [
             "name.required" => "informe o nome",
+            "email.required" => "informe o e-mail",
             "email.email" => "e-mail inválido",
             "email.unique" => "e-mail já existe"
         ];

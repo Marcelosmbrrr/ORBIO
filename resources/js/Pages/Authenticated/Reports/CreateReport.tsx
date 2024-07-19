@@ -47,6 +47,7 @@ const schema = yup.object({
 type FormData = yup.InferType<typeof schema>;
 
 export default function CreateReport() {
+    
     const { serviceorder }: any = usePage().props;
     const { name, pilot, client, location } = serviceorder.data;
 

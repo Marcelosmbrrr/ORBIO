@@ -7,21 +7,13 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Inertia\Response;
 
-class AuthenticatedSessionController extends Controller
+class SessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
-    public function create(): Response
+    public function create()
     {
-        return Inertia::render('Auth/Login', [
-            'canResetPassword' => Route::has('password.request'),
-            'status' => session('status'),
-        ]);
+        return Inertia::render("Auth/Login");
     }
 
     /**
@@ -34,17 +26,17 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
-        $redirect_to = "managers.index";
+        $redirect_to = "managers";
 
         if (in_array($user->role, ["piloto", "cliente"])) {
             session(['tenant_id' => $user->tenant_id]);
-            $redirect_to = "service-orders.index";
+            $redirect_to = "service-orders";
         } elseif ($user->role === "gerente") {
             session(['tenant_id' => $user->id]);
-            $redirect_to = "service-orders.index";
+            $redirect_to = "service-orders";
         }
 
-        return redirect()->intended(route($redirect_to, absolute: false));
+        return redirect()->intended($redirect_to);
     }
 
     /**
@@ -58,6 +50,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 }

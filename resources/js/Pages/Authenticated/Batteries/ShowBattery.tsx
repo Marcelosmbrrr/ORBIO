@@ -72,7 +72,7 @@ export default function ShowBattery({ battery }: any) {
                             {battery.image ? <img className="h-auto max-w-lg rounded-lg" width={300} height={300} src={battery.image} alt="imagem da bateria" /> : ""}
                         </div>
                         <div className='flex justify-end py-3'>
-                            <Link href="/batteries" className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                            <Link href={route('batteries.index')} className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 Voltar
                             </Link>
                         </div>

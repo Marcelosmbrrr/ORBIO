@@ -3,9 +3,9 @@ import { router, usePage } from "@inertiajs/react";
 import { useSnackbar } from 'notistack';
 // Custom
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
-import { CreateUser } from '@/Components/Users/CreateUser';
-import { EditUser } from '@/Components/Users/EditUser';
-import { ShowUser } from '@/Components/Users/ShowUser';
+import { CreatePilot } from '@/Components/Pilots/CreatePilot';
+import { EditPilot } from '@/Components/Pilots/EditPilot';
+import { ShowPilot } from '@/Components/Pilots/ShowPilot';
 import { DeleteOrUndeleteResource } from '@/Components/Shared/Modal/DeleteOrUndeleteResource';
 import { LimitSelector } from '@/Components/Shared/Pagination/LimitSelector';
 import { OrderSelector } from '@/Components/Shared/Pagination/OrderSelector';
@@ -149,9 +149,9 @@ const SearchInput = ({ value, onChange, onSubmit }: { value: string, onChange: (
 
 const ActionButtons = ({ canCreate, canEdit, canShow, canDeleteOrUndelete, selections, reload, currentParams }: any) => (
     <div className="flex justify-start md:justify-end flex-shrink-0 w-full md:w-auto md:flex-row md:space-y-0 md:items-center space-x-1">
-        <CreateUser can_open={canCreate} entity='pilots' />
-        <EditUser can_open={canEdit} entity='pilots' selection={selections[0]} />
-        <ShowUser can_open={canShow} entity='pilots' selection={selections[0]} />
+        <CreatePilot can_open={canCreate} />
+        <EditPilot can_open={canEdit} selection={selections[0]} />
+        <ShowPilot can_open={canShow} selection={selections[0]} />
         <DeleteOrUndeleteResource
             can_open={canDeleteOrUndelete}
             reload={reload}

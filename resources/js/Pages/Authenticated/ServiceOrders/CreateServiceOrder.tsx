@@ -75,7 +75,6 @@ const CreateServiceOrder: React.FC = React.memo(() => {
 
     return (
         <AuthenticatedLayout>
-
             <ol className="flex items-center whitespace-nowrap">
                 <li className="inline-flex items-center">
                     <a className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
@@ -101,7 +100,6 @@ const CreateServiceOrder: React.FC = React.memo(() => {
                     Criar
                 </li>
             </ol>
-
             <section>
                 <div className="mx-auto py-16">
                     <div className='mb-10'>
