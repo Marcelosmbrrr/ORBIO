@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { router, usePage } from "@inertiajs/react";
-import { useSnackbar } from 'notistack';
 // Custom
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { CreatePilot } from '@/Components/Pilots/CreatePilot';
@@ -9,6 +8,7 @@ import { ShowPilot } from '@/Components/Pilots/ShowPilot';
 import { DeleteOrUndeleteResource } from '@/Components/Shared/Modal/DeleteOrUndeleteResource';
 import { LimitSelector } from '@/Components/Shared/Pagination/LimitSelector';
 import { OrderSelector } from '@/Components/Shared/Pagination/OrderSelector';
+import { Alert } from '@/Components/Alert';
 // Types
 import { PilotSelected, PilotRecord, Meta } from './types';
 
@@ -23,15 +23,8 @@ const statusClassname: { [key: string]: string } = {
 const defaultParams: QueryParams = { page: 1, search: "", order_by: "id", limit: "10", group: "all" };
 
 export default function Pilots() {
-    const { auth, data, queryParams = null, success }: any = usePage().props;
-    const { enqueueSnackbar } = useSnackbar();
 
-    React.useEffect(() => {
-        if (success) {
-            setSelections([]);
-            enqueueSnackbar(success, { variant: "success" });
-        }
-    }, []);
+    const { auth, data, queryParams = null, success }: any = usePage().props;
 
     const pilots: PilotRecord[] = data.data;
     const meta: Meta = data.meta;
@@ -78,6 +71,9 @@ export default function Pilots() {
             <div className='flex flex-col h-full'>
                 <Breadcrumb />
                 <div className='grow py-5 rounded'>
+                    {success &&
+                        <Alert type='success' message={success} />
+                    }
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
                         <SearchInput value={search} onChange={setSearch} onSubmit={handleSearchSubmit} />
                         <ActionButtons

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useSnackbar } from 'notistack';
 // Custom
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { ProfileBasicData } from '@/Components/Profile/ProfileBasicData';
@@ -8,19 +7,12 @@ import { ProfileAddressData } from '@/Components/Profile/ProfileAddressData';
 import { ProfileContactData } from '@/Components/Profile/ProfileContactData';
 import { ProfileChangePassword } from '@/Components/Profile/ProfileChangePassword';
 import { ProfileDeactivation } from '@/Components/Profile/ProfileDeactivation';
+import { Alert } from '@/Components/Alert';
 
 export default function Profile({ success }: any) {
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    function showAlert() {
-        enqueueSnackbar(success, { variant: "success" });
-    }
-
     return (
         <AuthenticatedLayout>
-            {success && showAlert()}
-
             <ol className="flex items-center whitespace-nowrap mb-5">
                 <li className="inline-flex items-center">
                     <span className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
@@ -38,6 +30,10 @@ export default function Profile({ success }: any) {
                     Minha Conta
                 </li>
             </ol>
+
+            {success &&
+                <Alert type='success' message={success} />
+            }
 
             <div className="grid gap-4 grid-cols-1 xl:grid-cols-2 auto-rows-min w-full">
                 <ProfileBasicData />

@@ -7,13 +7,13 @@ use Inertia\Inertia;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Http\Requests\Profile\EditBasicDataRequest;
 use App\Http\Requests\Profile\EditDocumentalDataRequest;
 use App\Http\Requests\Profile\EditAddressDataRequest;
 use App\Http\Requests\Profile\EditContactDataRequest;
 use App\Http\Requests\Profile\DeactivateAccountRequest;
 use App\Http\Requests\Profile\ChangePasswordRequest;
-use App\Models\User;
 use App\Http\Resources\Profile\ProfileResource;
 
 class ProfileController extends Controller
@@ -39,7 +39,7 @@ class ProfileController extends Controller
         $user->update($request->validated());
 
         return redirect()->route('profile.index')
-            ->with('success', "Perfil atualizado!");
+            ->with('success', "Os dados básicos foram atualizados");
     }
 
     function updateDocument(EditDocumentalDataRequest $request)
@@ -52,7 +52,7 @@ class ProfileController extends Controller
         $user->profile->document()->update($data);
 
         return redirect()->route('profile.index')
-            ->with('success', "Perfil atualizado!");
+            ->with('success', "Os documentos foram atualizados");
     }
 
     function updateAddress(EditAddressDataRequest $request)
@@ -61,7 +61,7 @@ class ProfileController extends Controller
         $user->profile->address()->update($request->validated());
 
         return redirect()->route('profile.index')
-            ->with('success', "Perfil atualizado!");
+            ->with('success', "Os dados de endereço foram atualizados");
     }
 
     function updateContact(EditContactDataRequest $request)
@@ -70,7 +70,7 @@ class ProfileController extends Controller
         $user->profile->contact()->update($request->validated());
 
         return redirect()->route('profile.index')
-            ->with('success', "Perfil atualizado!");
+            ->with('success', "Os dados de contato foram atualizados");
     }
 
     function updatePassword(ChangePasswordRequest $request)

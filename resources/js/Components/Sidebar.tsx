@@ -123,7 +123,7 @@ export const Sidebar = React.memo(() => {
                         <SidebarItem icon={UserGroupIcon} label="Usuários">
                             <li>
                                 <Link
-                                    href="/pilots"
+                                    href={route('pilots.index')}
                                     className="flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer"
                                 >
                                     <div className="p-1 rounded">
@@ -145,7 +145,7 @@ export const Sidebar = React.memo(() => {
                             </li>
                             <li>
                                 <Link
-                                    href="/clients"
+                                    href={route('clients.index')}
                                     className="flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer"
                                 >
                                     <div className="p-1 rounded">
@@ -169,18 +169,18 @@ export const Sidebar = React.memo(() => {
                     )}
 
                     {!!auth.user.authorization.serviceorders.read && (
-                        <SidebarItem href="/service-orders" icon={ClipboardDocumentIcon} label="Ordens de Serviço" />
+                        <SidebarItem href={route('service-orders.index')} icon={ClipboardDocumentIcon} label="Ordens de Serviço" />
                     )}
 
                     {!!auth.user.authorization.flightplans.read && (
-                        <SidebarItem href="/flight-plans" icon={MapIcon} label="Planos de Voo" />
+                        <SidebarItem href={route('flight-plans.index')} icon={MapIcon} label="Planos de Voo" />
                     )}
 
                     {!!auth.user.authorization.equipments.read && (
                         <SidebarItem icon={BriefcaseIcon} label="Equipamentos">
                             <li>
                                 <Link
-                                    href="/drones"
+                                    href={route('drones.index')}
                                     className="flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer"
                                 >
                                     <div className="p-1 rounded">
@@ -191,7 +191,7 @@ export const Sidebar = React.memo(() => {
                             </li>
                             <li>
                                 <Link
-                                    href="/batteries"
+                                    href={route('batteries.index')}
                                     className="flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer"
                                 >
                                     <div className="p-1 rounded">
@@ -202,7 +202,7 @@ export const Sidebar = React.memo(() => {
                             </li>
                             <li>
                                 <Link
-                                    href="/equipments"
+                                    href={route('equipments.index')}
                                     className="flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer"
                                 >
                                     <div className="p-1 rounded">

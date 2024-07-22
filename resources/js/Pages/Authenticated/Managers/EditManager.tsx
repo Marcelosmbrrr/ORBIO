@@ -3,19 +3,19 @@ import { useForm, Link } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { useSnackbar } from 'notistack';
 
-export default function EditTenant({ tenant }: any) {
+export default function EditTenant({ manager }: any) {
 
     const { enqueueSnackbar } = useSnackbar();
 
     const { data, setData, patch, processing, errors } = useForm({
-        name: tenant.name,
-        email: tenant.email,
+        name: manager.name,
+        email: manager.email,
         password: ''
     });
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/managers/" + tenant.id, {
+        patch("/managers/" + manager.id, {
             onError: () => {
                 enqueueSnackbar("Erro ao editar o gerente!", { variant: "error" });
             }

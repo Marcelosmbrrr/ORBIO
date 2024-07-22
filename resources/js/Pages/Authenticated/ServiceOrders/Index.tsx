@@ -7,6 +7,7 @@ import { CreateServiceOrder } from '@/Components/ServiceOrders/CreateServiceOrde
 import { ShowServiceOrder } from '@/Components/ServiceOrders/ShowServiceOrder';
 import { LimitSelector } from '@/Components/Shared/Pagination/LimitSelector';
 import { OrderSelector } from '@/Components/Shared/Pagination/OrderSelector';
+import { Alert } from '@/Components/Alert';
 // Types
 import { ServiceOrderSelected, ServiceOrderRecord } from './types';
 
@@ -79,6 +80,9 @@ export default function ServiceOrders() {
             <div className='flex flex-col h-full'>
                 <Breadcrumb />
                 <div className='grow py-5 rounded'>
+                    {success &&
+                        <Alert type='success' message={success} />
+                    }
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
                         <SearchInput value={search} onChange={setSearch} onSubmit={handleSearchSubmit} />
                         <ActionButtons

@@ -4,6 +4,8 @@ import { Head, useForm } from '@inertiajs/react';
 
 export default function ResetPassword({ token, email }: { token: string, email: string }) {
 
+    console.log(status)
+
     const { data, setData, post, processing, errors, reset } = useForm({
         token: token,
         email: email,
@@ -26,10 +28,9 @@ export default function ResetPassword({ token, email }: { token: string, email: 
     return (
         <GuestLayout>
             <Head title="Alterar a Senha" />
-
             <form onSubmit={submit}>
                 <div>
-                    <label htmlFor="email" className="block font-medium text-sm text-gray-700">
+                    <label htmlFor="email" className="block font-medium text-sm text-gray-700 dark:text-gray-300">
                         E-mail
                     </label>
                     <input
@@ -44,9 +45,8 @@ export default function ResetPassword({ token, email }: { token: string, email: 
                         {errors.email}
                     </p>
                 </div>
-
                 <div className="mt-4">
-                    <label htmlFor="email" className="block font-medium text-sm text-gray-700">
+                    <label htmlFor="email" className="block font-medium text-sm text-gray-700 dark:text-gray-300">
                         Senha
                     </label>
                     <input
@@ -61,9 +61,8 @@ export default function ResetPassword({ token, email }: { token: string, email: 
                         {errors.password}
                     </p>
                 </div>
-
                 <div className="mt-4">
-                    <label htmlFor="password_confirmation" className="block font-medium text-sm text-gray-700">
+                    <label htmlFor="password_confirmation" className="block font-medium text-sm text-gray-700 dark:text-gray-300">
                         Digite a senha novamente
                     </label>
                     <input
@@ -78,7 +77,6 @@ export default function ResetPassword({ token, email }: { token: string, email: 
                         {errors.password_confirmation}
                     </p>
                 </div>
-
                 <div className="flex items-center justify-end mt-4">
                     <button
                         disabled={processing}

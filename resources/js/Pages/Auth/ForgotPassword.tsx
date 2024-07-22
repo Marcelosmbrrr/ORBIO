@@ -1,8 +1,10 @@
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
+import { Alert } from '@/Components/Alert';
 
 export default function ForgotPassword({ status }: { status?: string }) {
+
     const { data, setData, post, processing, errors } = useForm({
         email: '',
     });
@@ -17,15 +19,13 @@ export default function ForgotPassword({ status }: { status?: string }) {
         <GuestLayout>
             <Head title="Esqueceu a Senha" />
 
-            <div className="mb-4 text-sm text-gray-600">
+            <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                 Esqueceu a senha? Informe o e-mail cadastrado abaixo para receber o link de recuperação da sua conta.
             </div>
 
-            {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
-
             <form onSubmit={submit}>
                 <div>
-                    <label htmlFor="email" className="block font-medium text-sm text-gray-700">
+                    <label htmlFor="email" className="block font-medium text-sm text-gray-700 dark:text-gray-300">
                         E-mail
                     </label>
                     <input
@@ -44,7 +44,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                 <div className="flex items-center justify-end mt-4 gap-x-3">
                     <Link
                         href={route('login')}
-                        className="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none"
+                        className="underline text-sm text-gray-600 dark:text-white hover:text-gray-900 rounded-md focus:outline-none"
                     >
                         Voltar
                     </Link>
@@ -57,6 +57,11 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     </button>
                 </div>
             </form>
+
+            {status && (
+                <Alert message={status} type='success' />
+            )
+            }
         </GuestLayout>
     );
 }

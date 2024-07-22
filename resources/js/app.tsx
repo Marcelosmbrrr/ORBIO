@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, closeSnackbar } from 'notistack';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -16,7 +16,14 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(
-            <SnackbarProvider maxSnack={3} autoHideDuration={4000}>
+            <SnackbarProvider
+                maxSnack={3}
+                action={(snackbarId) => (
+                    <button onClick={() => closeSnackbar(snackbarId)}>
+                        Fechar
+                    </button>
+                )}
+            >
                 <App {...props} />
             </SnackbarProvider>
         );

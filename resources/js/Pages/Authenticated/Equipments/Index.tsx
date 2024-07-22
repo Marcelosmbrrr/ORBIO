@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { router, usePage } from "@inertiajs/react";
-import { useSnackbar } from 'notistack';
 // Custom
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { CreateEquipment } from '@/Components/Equipments/CreateEquipment';
@@ -9,6 +8,7 @@ import { ShowEquipment } from '@/Components//Equipments/ShowEquipment';
 import { DeleteOrUndeleteResource } from '@/Components/Shared/Modal/DeleteOrUndeleteResource';
 import { LimitSelector } from '@/Components/Shared/Pagination/LimitSelector';
 import { OrderSelector } from '@/Components/Shared/Pagination/OrderSelector';
+import { Alert } from '@/Components/Alert';
 // Types
 import { EquipmentSelected, EquipmentRecord } from './types';
 
@@ -23,14 +23,6 @@ const statusClassname: { [key: string]: string } = {
 export default function Equipments() {
 
     const { auth, data, queryParams = null, success }: any = usePage().props;
-    const { enqueueSnackbar } = useSnackbar();
-
-    React.useEffect(() => {
-        if (success) {
-            setSelections([]);
-            enqueueSnackbar(success, { variant: "success" });
-        }
-    }, []);
 
     const equipments: EquipmentRecord[] = data.data;
     const meta = data.meta;
@@ -77,6 +69,9 @@ export default function Equipments() {
             <div className='flex flex-col h-full'>
                 <Breadcrumb />
                 <div className='grow py-5 rounded'>
+                    {success &&
+                        <Alert type='success' message={success} />
+                    }
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
                         <SearchInput value={search} onChange={setSearch} onSubmit={handleSearchSubmit} />
                         <ActionButtons

@@ -4,15 +4,14 @@ namespace App\Http\Controllers\Manager;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Http\Requests\Manager\CreateManagerRequest;
 use App\Http\Requests\Manager\EditManagerRequest;
-use App\Notifications\UserCreationNotification;
 use App\Http\Resources\Users\UserResource;
+use App\Events\UserCreated;
 
 class ManagerController extends Controller
 {
@@ -67,11 +66,10 @@ class ManagerController extends Controller
         $manager->document()->create();
         $manager->contact()->create();
 
-        event(new Registered($manager));
-        //$manager->notify(new UserCreationNotification($request->password));
+        event(new UserCreated($manager, $request->password));
 
         return redirect()->route('managers.index', ['search' => $manager->public_id->toString()])
-            ->with('success', 'Gerente criado!');
+            ->with('success', 'A criação do gerente foi bem sucedida!');
     }
 
     public function show(string $id)
@@ -101,7 +99,7 @@ class ManagerController extends Controller
         $manager = $this->model->withTrashed()->where("public_id", $id)->first();
 
         return Inertia::render("Authenticated/Managers/EditManager", [
-            "tenant" => [
+            "manager" => [
                 "id" => $manager->public_id,
                 "name" => $manager->name,
                 "email" => $manager->email
@@ -117,7 +115,7 @@ class ManagerController extends Controller
         $user->update($request->validated());
 
         return redirect()->route('managers.index', ['search' => $user->public_id])
-            ->with('success', "Gerente editado!");
+            ->with('success', "A edição do gerente foi bem sucedida.");
     }
 
     public function destroy()
@@ -131,6 +129,6 @@ class ManagerController extends Controller
         });
 
         return redirect()->route('managers.index', ['group' => "deleted"])
-            ->with('success', "Gerente(s) Deletado(s)!");
+            ->with('success', "Os gerentes selecionados foram deletados.");
     }
 }
