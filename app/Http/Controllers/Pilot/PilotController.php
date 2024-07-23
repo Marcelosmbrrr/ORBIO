@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Pilot;
 
-use App\Events\UserCreated;
-use App\Events\UserEmailUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pilots\CreatePilotRequest;
 use App\Http\Requests\Pilots\EditPilotRequest;
@@ -13,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use App\Notifications\EmailVerificationNotification;
+use App\Notifications\EmailVerificationAfterUpdateNotification;
 
 class PilotController extends Controller
 {
@@ -58,20 +58,20 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $pilot = $this->model->create([
+        $user = $this->model->create([
             ...$request->validated(),
             'role' => 'piloto',
             'tenant_id' => session('tenant_id'),
             'public_id' => Str::uuid(),
         ]);
 
-        $pilot->address()->create();
-        $pilot->document()->create();
-        $pilot->contact()->create();
+        $user->address()->create();
+        $user->document()->create();
+        $user->contact()->create();
 
-        event(new UserCreated($pilot, $request->password));
+        $user->notify(new EmailVerificationNotification($request->password));
 
-        return redirect()->route('pilots.index', ['search' => $pilot->public_id->toString()])
+        return redirect()->route('pilots.index', ['search' => $user->public_id->toString()])
             ->with('success', 'A criação do piloto foi bem sucedida');
     }
 
@@ -79,18 +79,18 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
+        $user = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Pilots/ShowPilot', [
             'user' => [
-                'id' => $pilot->public_id,
-                'name' => $pilot->name,
-                'role' => $pilot->role,
-                'email' => $pilot->email,
-                'status' => $pilot->trashed() ? 'Deletado' : ($pilot->status ? 'Ativo' : 'Inativo'),
-                'created_at' => $pilot->created_at->format('d/m/Y'),
-                'updated_at' => $pilot->updated_at->format('d/m/Y'),
-                'deleted_at' => $pilot->deleted_at,
+                'id' => $user->public_id,
+                'name' => $user->name,
+                'role' => $user->role,
+                'email' => $user->email,
+                'status' => $user->trashed() ? 'Deletado' : ($user->status ? 'Ativo' : 'Inativo'),
+                'created_at' => $user->created_at->format('d/m/Y'),
+                'updated_at' => $user->updated_at->format('d/m/Y'),
+                'deleted_at' => $user->deleted_at,
             ],
         ]);
     }
@@ -99,14 +99,14 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
+        $user = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Pilots/EditPilot', [
             'user' => [
-                'id' => $pilot->public_id,
-                'name' => $pilot->name,
-                'email' => $pilot->email,
-                'role' => $pilot->role,
+                'id' => $user->public_id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
             ],
         ]);
     }
@@ -115,24 +115,24 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
-        $pilot->update($request->validated());
+        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $user->update($request->validated());
 
-        $email_changed = $pilot->email !== $request->input('email');
+        $email_changed = $user->email !== $request->input('email');
 
-        $pilot->update($request->validated());
+        $user->update($request->validated());
 
         if ($email_changed) {
 
-            $pilot->update([
+            $user->update([
                 'email_verified_at' => null,
             ]);
 
-            event(new UserEmailUpdated($pilot));
+            $user->notify(new EmailVerificationAfterUpdateNotification());
 
         }
 
-        return redirect()->route('pilots.index', ['search' => $pilot->public_id])
+        return redirect()->route('pilots.index', ['search' => $user->public_id])
             ->with('success', 'A edição do piloto foi bem sucedida');
     }
 
@@ -144,8 +144,8 @@ class PilotController extends Controller
 
         DB::transaction(function () use ($ids) {
             $users = $this->model->where('public_id', $ids)->get();
-            foreach ($users as $pilot) {
-                $pilot->delete();
+            foreach ($users as $user) {
+                $user->delete();
             }
         });
 

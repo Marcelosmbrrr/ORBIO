@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Manager;
 
-use App\Events\UserCreated;
-use App\Events\UserEmailUpdated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Manager\CreateManagerRequest;
 use App\Http\Requests\Manager\EditManagerRequest;
@@ -13,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use App\Notifications\EmailVerificationNotification;
+use App\Notifications\EmailVerificationAfterUpdateNotification;
 
 class ManagerController extends Controller
 {
@@ -57,19 +57,19 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:write');
 
-        $manager = $this->model->create([
+        $user = $this->model->create([
             ...$request->validated(),
             'role' => 'gerente',
             'public_id' => Str::uuid(),
         ]);
 
-        $manager->address()->create();
-        $manager->document()->create();
-        $manager->contact()->create();
+        $user->address()->create();
+        $user->document()->create();
+        $user->contact()->create();
 
-        event(new UserCreated($manager, $request->password));
+        $user->notify(new EmailVerificationNotification($request->password));
 
-        return redirect()->route('managers.index', ['search' => $manager->public_id->toString()])
+        return redirect()->route('managers.index', ['search' => $user->public_id])
             ->with('success', 'A criação do gerente foi bem sucedida');
     }
 
@@ -77,18 +77,18 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:read');
 
-        $manager = $this->model->withTrashed()->where('public_id', $id)->first();
+        $user = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Managers/ShowManager', [
             'manager' => [
-                'id' => $manager->public_id,
-                'name' => $manager->name,
-                'role' => $manager->role,
-                'email' => $manager->email,
-                'status' => $manager->trashed() ? 'Deletado' : ($manager->status ? 'Ativo' : 'Inativo'),
-                'created_at' => $manager->created_at->format('d/m/Y'),
-                'updated_at' => $manager->updated_at->format('d/m/Y'),
-                'deleted_at' => $manager->deleted_at,
+                'id' => $user->public_id,
+                'name' => $user->name,
+                'role' => $user->role,
+                'email' => $user->email,
+                'status' => $user->trashed() ? 'Deletado' : ($user->status ? 'Ativo' : 'Inativo'),
+                'created_at' => $user->created_at->format('d/m/Y'),
+                'updated_at' => $user->updated_at->format('d/m/Y'),
+                'deleted_at' => $user->deleted_at,
             ],
         ]);
     }
@@ -97,13 +97,13 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:write');
 
-        $manager = $this->model->withTrashed()->where('public_id', $id)->first();
+        $user = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Managers/EditManager', [
             'manager' => [
-                'id' => $manager->public_id,
-                'name' => $manager->name,
-                'email' => $manager->email,
+                'id' => $user->public_id,
+                'name' => $user->name,
+                'email' => $user->email,
             ],
         ]);
     }
@@ -124,7 +124,7 @@ class ManagerController extends Controller
                 'email_verified_at' => null,
             ]);
 
-            event(new UserEmailUpdated($user));
+            $user->notify(new EmailVerificationAfterUpdateNotification());
 
         }
 
