@@ -1,13 +1,10 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function CreateClient() {
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
         password: ''
@@ -15,12 +12,7 @@ export default function CreateClient() {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        post("/clients", {
-            onError: (e) => {
-                //console.log(e)
-                enqueueSnackbar("Erro ao criar o usuário!", { variant: "error" });
-            }
-        });
+        post("/clients");
     };
 
     return (

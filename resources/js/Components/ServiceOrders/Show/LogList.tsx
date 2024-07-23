@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { Link, usePage, useForm } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { DeleteOrUndeleteResource } from '@/Components/Shared/Modal/DeleteOrUndeleteResource';
 
 export function LogList() {
 
     const { logs, can, queryParams = null }: any = usePage().props;
     const [selections, setSelections] = React.useState<{ id: string }[]>([]);
-    const { enqueueSnackbar } = useSnackbar();
 
     const form = useForm();
 

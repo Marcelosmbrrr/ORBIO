@@ -15,11 +15,7 @@ export default function EditTenant({ manager }: any) {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/managers/" + manager.id, {
-            onError: () => {
-                enqueueSnackbar("Erro ao editar o gerente!", { variant: "error" });
-            }
-        });
+        patch("/managers/" + manager.id);
     };
 
     return (
@@ -62,7 +58,10 @@ export default function EditTenant({ manager }: any) {
                                 <span className='text-red-500 text-sm'>{errors.name}</span>
                             </div>
                             <div className="sm:col-span-2">
-                                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">E-mail</label>
+                                <div className='mb-2'>
+                                    <label htmlFor="email" className="block text-sm font-medium text-gray-900 dark:text-white">E-mail</label>
+                                    <span className='text-gray-400 text-sm'>O usuário terá que confirmar o e-mail novamente.</span>
+                                </div>
                                 <input type="text" value={data.email} onChange={e => setData('email', e.target.value)} id="email" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600" placeholder="Informe o e-mail" />
                                 <span className='text-red-500 text-sm'>{errors.email}</span>
                             </div>

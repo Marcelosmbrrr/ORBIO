@@ -12,6 +12,7 @@ class Equipment extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public $table = "equipments";
     protected $guarded = [];
 
     function tenant()
@@ -30,7 +31,7 @@ class Equipment extends Model
     {
         return $query->when((bool) $value, function ($query) use ($value) {
             $query
-                ->where('equipments.public_id', $value)
+                ->where('public_id', $value)
                 ->orWhere('manufacturer', 'LIKE', '%' . $value . '%')
                 ->orWhere('model', 'LIKE', '%' . $value . '%')
                 ->orWhere('record_number', 'LIKE', '%' . $value . '%')

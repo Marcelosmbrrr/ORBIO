@@ -57,6 +57,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::user();
+
+        if (is_null($user->email_verified_at)) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => "O e-mail precisa ser confirmado",
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

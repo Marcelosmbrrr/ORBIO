@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function EditDrone({ drone }: any) {
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const { data, setData, patch, processing, errors } = useForm({
         name: drone.name,
@@ -19,11 +16,7 @@ export default function EditDrone({ drone }: any) {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/drones/" + drone.id, {
-            onError: () => {
-                enqueueSnackbar("Erro ao editar o drone!", { variant: "error" });
-            }
-        });
+        patch("/drones/" + drone.id);
     };
 
     function onChangeImage(e: any) {

@@ -19,7 +19,8 @@ use App\Http\Controllers\Shared\RevertDeletionController;
 
 Route::redirect("/", "/login");
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
+
     // Admin
     Route::resource("managers", ManagerController::class)->names('managers');
     // Users
@@ -47,6 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Actions
     Route::patch("actions/undelete/{table}", RevertDeletionController::class);
     Route::view("actions/map", "map-visualization");
+
 });
 
 require __DIR__ . '/auth.php';

@@ -13,11 +13,11 @@ class EditManagerRequest extends FormRequest
 
     public function rules(): array
     {
-        $manager_id = $this->route("manager");
+        $public_id = $this->route("manager");
 
         $rules = [
             "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email," . $manager_id]
+            "email" => ["required", "email", "unique:users,email," . $public_id . ",public_id"]
         ];
 
         if ($this->filled('password')) {

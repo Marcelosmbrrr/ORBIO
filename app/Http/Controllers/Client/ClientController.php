@@ -12,7 +12,8 @@ use App\Models\User;
 use App\Http\Requests\Clients\CreateClientRequest;
 use App\Http\Requests\Clients\EditClientRequest;
 use App\Http\Resources\Users\UserResource;
-use App\Notifications\UserCreationNotification;
+use App\Events\UserCreated;
+use App\Events\UserEmailUpdated;
 
 class ClientController extends Controller
 {
@@ -40,7 +41,7 @@ class ClientController extends Controller
             ->orderBy($order_by)
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'clients', (int) $page);
 
-        return Inertia::render("Authenticated/Users/Clients/Index", [
+        return Inertia::render("Authenticated/Clients/Index", [
             "data" => new UserResource($data),
             "queryParams" => request()->query() ?: null,
             "success" => session('success'),
@@ -51,7 +52,7 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        return Inertia::render("Authenticated/Users/Clients/CreateClient");
+        return Inertia::render("Authenticated/Clients/CreateClient");
     }
 
     public function store(CreateClientRequest $request)
@@ -69,11 +70,10 @@ class ClientController extends Controller
         $client->document()->create();
         $client->contact()->create();
 
-        event(new Registered($client));
-        //$client->notify(new UserCreationNotification($request->password));
+        event(new UserCreated($client, $request->password));
 
         return redirect()->route('clients.index', ['search' => $client->public_id->toString()])
-            ->with('success', 'Cliente criado!');
+            ->with('success', 'A criação do cliente foi bem sucedida');
     }
 
     public function show(string $id)
@@ -82,7 +82,7 @@ class ClientController extends Controller
 
         $client = $this->model->withTrashed()->where("public_id", $id)->first();
 
-        return Inertia::render("Authenticated/Users/Clients/ShowClient", [
+        return Inertia::render("Authenticated/Clients/ShowClient", [
             "user" => [
                 "id" => $client->public_id,
                 "name" => $client->name,
@@ -102,7 +102,7 @@ class ClientController extends Controller
 
         $client = $this->model->withTrashed()->where("public_id", $id)->first();
 
-        return Inertia::render("Authenticated/Users/Clients/EditClient", [
+        return Inertia::render("Authenticated/Clients/EditClient", [
             "user" => [
                 "id" => $client->public_id,
                 "name" => $client->name,
@@ -119,8 +119,22 @@ class ClientController extends Controller
         $client = $this->model->withTrashed()->where("public_id", $id)->first();
         $client->update($request->validated());
 
+        $email_changed = $client->email !== $request->input('email');
+
+        $client->update($request->validated());
+
+        if ($email_changed) {
+
+            $client->update([
+                'email_verified_at' => null
+            ]);
+
+            event(new UserEmailUpdated($client));
+            
+        }
+
         return redirect()->route('clients.index', ['search' => $client->public_id])
-            ->with('success', "Cliente editado!");
+            ->with('success', "A edição do cliente foi bem sucedida");
     }
 
     public function destroy()
@@ -137,6 +151,6 @@ class ClientController extends Controller
         });
 
         return to_route('clients.index')
-            ->with('success', "Cliente(s) deletado(s)!");
+            ->with('success', "Os clientes selecionados foram deletados");
     }
 }

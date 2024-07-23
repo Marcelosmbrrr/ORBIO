@@ -13,11 +13,11 @@ class EditClientRequest extends FormRequest
 
     public function rules(): array
     {
-        $user_id = $this->route("client");
+        $public_id = $this->route("client");
 
         $rules = [
             "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email," . $user_id]
+            "email" => ["required", "email", "unique:users,email," . $public_id . ",public_id"]
         ];
 
         if ($this->filled('password')) {

@@ -15,6 +15,7 @@ use App\Http\Requests\Profile\EditContactDataRequest;
 use App\Http\Requests\Profile\DeactivateAccountRequest;
 use App\Http\Requests\Profile\ChangePasswordRequest;
 use App\Http\Resources\Profile\ProfileResource;
+use App\Events\UserEmailUpdated;
 
 class ProfileController extends Controller
 {
@@ -36,7 +37,27 @@ class ProfileController extends Controller
     public function updateBasic(EditBasicDataRequest $request)
     {
         $user = $this->model->where("id", Auth::user()->id)->first();
+
+        $email_changed = $user->email !== $request->email;
+
         $user->update($request->validated());
+
+        if ($email_changed) {
+
+            $user->update([
+                'email_verified_at' => null
+            ]);
+
+            event(new UserEmailUpdated($user));
+
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->with('success', "O link de confirmação foi enviado para o seu e-mail.");
+        }
 
         return redirect()->route('profile.index')
             ->with('success', "Os dados básicos foram atualizados");
@@ -102,13 +123,13 @@ class ProfileController extends Controller
         }
 
         $user->delete();
-
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return Inertia::render("Guest/Login", [
-            "success" => "Conta desativada!",
+            "success" => "Sua conta foi desativada",
         ]);
     }
 }

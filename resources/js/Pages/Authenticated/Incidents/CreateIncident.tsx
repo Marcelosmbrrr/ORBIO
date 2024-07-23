@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 
 interface Props {
     service_order_id: string;
@@ -9,9 +8,7 @@ interface Props {
 
 export default function CreateIncident(props: Props) {
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         type: '',
         description: '',
         date: ''
@@ -21,12 +18,7 @@ export default function CreateIncident(props: Props) {
         e.preventDefault();
 
         const url = window.location.pathname.replace("/create", "");
-        post(url, {
-            onError: (e) => {
-                ///console.log(e)
-                enqueueSnackbar("Erro ao criar o incidente!", { variant: "error" });
-            }
-        });
+        post(url);
     };
 
     return (

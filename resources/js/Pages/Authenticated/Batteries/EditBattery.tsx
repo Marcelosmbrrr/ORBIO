@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function EditBattery({ battery }: any) {
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const { data, setData, patch, processing, errors } = useForm({
         name: battery.name,
@@ -18,11 +15,7 @@ export default function EditBattery({ battery }: any) {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/batteries/" + battery.id, {
-            onError: () => {
-                enqueueSnackbar("Erro ao editar o bateria!", { variant: "error" });
-            }
-        });
+        patch("/batteries/" + battery.id);
     };
 
     function onChangeImage(e: any) {

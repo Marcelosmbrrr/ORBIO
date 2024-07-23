@@ -15,6 +15,6 @@ class RevertDeletionController extends Controller
             'deleted_at' => null
         ]);
 
-        return redirect()->back()->with('success', 'Recurso(s) Recuperado(s)!');
+        return redirect()->back()->with('success', 'Os registros selecionados foram recuperados');
     }
 }

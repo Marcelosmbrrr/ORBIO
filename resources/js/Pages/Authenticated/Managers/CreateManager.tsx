@@ -7,7 +7,7 @@ export default function CreateManager() {
 
     const { enqueueSnackbar } = useSnackbar();
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
         password: ''
@@ -15,12 +15,7 @@ export default function CreateManager() {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        post("/managers", {
-            onError: (e) => {
-                ///console.log(e)
-                enqueueSnackbar("Erro ao criar o gerente!", { variant: "error" });
-            }
-        });
+        post("/managers");
     };
 
     return (

@@ -171,7 +171,7 @@ class ServiceOrderController extends Controller
         });
 
         return to_route('service-orders.index', ['search' => $service_order->public_id])
-            ->with('success', "Ordem de serviço criada!");
+            ->with('success', "A criação da ordem de serviço foi bem sucedida");
     }
 
     public function update(EditServiceOrderRequest $request, string $id)
@@ -192,7 +192,7 @@ class ServiceOrderController extends Controller
             $service_order->update($data);
 
             return redirect()->route('service-orders.show', ['service_order' => $service_order->public_id])
-                ->with('success', "Situação atualizada!");
+                ->with('success', "A situação foi atualizada");
         } else if ((bool) $request->report) {
 
             $public_id = Str::uiid();
@@ -207,7 +207,7 @@ class ServiceOrderController extends Controller
             Storage::disk('public')->putFileAs('', $file_path, $request->report);
 
             return redirect()->route('service-orders.show', ['service_order' => $service_order->public_id])
-                ->with('success', "Relatório criado!");
+                ->with('success', "A edição da ordem de serviço foi bem sucedida");
         }
     }
 

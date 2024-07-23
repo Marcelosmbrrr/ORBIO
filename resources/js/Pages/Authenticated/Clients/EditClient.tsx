@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function EditPilot({ user }: any) {
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const { data, setData, patch, processing, errors } = useForm({
         name: user.name,
@@ -15,11 +12,7 @@ export default function EditPilot({ user }: any) {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/clients/" + user.id, {
-            onError: () => {
-                enqueueSnackbar("Erro ao editar o cliente!", { variant: "error" });
-            }
-        });
+        patch("/clients/" + user.id);
     };
 
     return (

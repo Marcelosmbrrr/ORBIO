@@ -52,7 +52,7 @@ class LogController extends Controller
         });
 
         return redirect()->route('service-orders.show', ['service_order' => $service_order->public_id])
-            ->with('success', "Log(s) criado(s)!");
+            ->with('success', "A criação dos logs foi bem sucedida");
     }
 
     public function show(string $service_order_id, string $log_id)
@@ -81,6 +81,6 @@ class LogController extends Controller
         });
 
         return redirect()->route('service-orders.show', ['service_order' => $service_order_id])
-            ->with('success', "Log deletado!");
+            ->with('success', "Os logs selecionados foram permanentemente deletados");
     }
 }

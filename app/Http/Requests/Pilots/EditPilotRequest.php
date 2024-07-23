@@ -13,11 +13,11 @@ class EditPilotRequest extends FormRequest
 
     public function rules(): array
     {
-        $user_id = $this->route("pilot");
+        $public_id = $this->route("pilot");
 
         $rules = [
             "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email," . $user_id]
+            "email" => ["required", "email", "unique:users,email," . $public_id . ",public_id"]
         ];
 
         if ($this->filled('password')) {
@@ -26,6 +26,7 @@ class EditPilotRequest extends FormRequest
 
         return $rules;
     }
+
 
     public function messages()
     {

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { router, usePage } from "@inertiajs/react";
-import { useSnackbar } from 'notistack';
 // Custom
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { CreateServiceOrder } from '@/Components/ServiceOrders/CreateServiceOrder';
@@ -22,15 +21,8 @@ const statusClassName: { [key: string]: string } = {
 };
 
 export default function ServiceOrders() {
-    const { auth, data, queryParams = null, success }: any = usePage().props;
-    const { enqueueSnackbar } = useSnackbar();
 
-    React.useEffect(() => {
-        if (success) {
-            setSelections([]);
-            enqueueSnackbar(success, { variant: "success" });
-        }
-    }, []);
+    const { auth, data, queryParams = null, success }: any = usePage().props;
 
     const serviceOrders: ServiceOrderRecord[] = data.data;
     const meta = data.meta;

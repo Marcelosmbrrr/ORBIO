@@ -38,7 +38,7 @@ class DroneController extends Controller
             ->orderBy($order_by)
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'drones', (int) $page);
 
-        return Inertia::render("Authenticated/Equipments/Drones/Index", [
+        return Inertia::render("Authenticated/Drones/Index", [
             "data" => new DroneResource($data),
             "queryParams" => request()->query() ?: null,
             "success" => session('success'),
@@ -49,7 +49,7 @@ class DroneController extends Controller
     {
         Gate::authorize('equipments:write');
 
-        return Inertia::render("Authenticated/Equipments/Drones/CreateDrone");
+        return Inertia::render("Authenticated/Drones/CreateDrone");
     }
 
     public function store(CreateDroneRequest $request)
@@ -72,7 +72,7 @@ class DroneController extends Controller
         }
 
         return redirect()->route('drones.index', ['search' => $drone->public_id->toString()])
-            ->with('success', 'Drone criado!');
+            ->with('success', 'A criação do drone foi bem sucedida');
     }
 
     public function show(string $id)
@@ -81,7 +81,7 @@ class DroneController extends Controller
 
         $drone = $this->model->withTrashed()->where("public_id", $id)->first();
 
-        return Inertia::render("Authenticated/Equipments/Drones/ShowDrone", [
+        return Inertia::render("Authenticated/Drones/ShowDrone", [
             "drone" => [
                 "id" => $drone->public_id,
                 "name" => $drone->name,
@@ -104,7 +104,7 @@ class DroneController extends Controller
 
         $drone = $this->model->withTrashed()->where("public_id", $id)->first();
 
-        return Inertia::render("Authenticated/Equipments/Drones/EditDrone", [
+        return Inertia::render("Authenticated/Drones/EditDrone", [
             "drone" => [
                 "id" => $drone->public_id,
                 "name" => $drone->name,
@@ -130,7 +130,7 @@ class DroneController extends Controller
         }
 
         return redirect()->route('drones.index', ['search' => $drone->public_id])
-            ->with('success', "Drone editado!");
+            ->with('success', "A edição do drone foi bem sucedida");
     }
 
     public function destroy()
@@ -147,6 +147,6 @@ class DroneController extends Controller
         });
 
         return redirect()->route('drones.index')
-            ->with('success', "Drone(s) Excluído(s)!");
+            ->with('success', "Os drones selecionados foram deletados");
     }
 }

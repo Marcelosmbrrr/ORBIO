@@ -5,9 +5,7 @@ import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function CreateEquipment() {
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: "",
         manufacturer: "",
         model: "",
@@ -19,12 +17,7 @@ export default function CreateEquipment() {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        post("/equipments", {
-            onError: (e) => {
-                console.log(e)
-                enqueueSnackbar("Erro ao criar o equipamento!", { variant: "error" });
-            }
-        });
+        post("/equipments");
     };
 
     function onChangeImage(e: any) {

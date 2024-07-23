@@ -60,7 +60,7 @@ class ReportController extends Controller
 
             $file_content = file_get_contents($request->file("file"));
             $filename = time() . ".pdf";
-            $file_path = getTenantUUID() . "/reports/$filename";
+            $file_path = session("tenant_id") . "/reports/$filename";
 
             $report = $this->reportModel->create([
                 "service_order_id" => $service_order->id,
@@ -90,6 +90,6 @@ class ReportController extends Controller
         Storage::disk('public')->delete($report->file_path);
 
         return to_route('service-orders.show')
-            ->with('success', "Relatório deletado!");
+            ->with('success', "Os relatórios selecionados foram permanentemente deletados");
     }
 }

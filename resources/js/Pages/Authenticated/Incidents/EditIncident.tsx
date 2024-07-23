@@ -1,13 +1,10 @@
 import * as React from 'react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 
 export default function EditIncident({ service_order, incident }: any) {
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    const { data, setData, patch, processing, errors, reset } = useForm({
+    const { data, setData, patch, processing, errors } = useForm({
         type: incident.type,
         description: incident.description,
         date: incident.date
@@ -17,12 +14,7 @@ export default function EditIncident({ service_order, incident }: any) {
         e.preventDefault();
 
         const url = window.location.pathname.replace("/edit", "");
-        patch(url, {
-            onError: (e) => {
-                ///console.log(e)
-                enqueueSnackbar("Erro ao editar o incidente!", { variant: "error" });
-            }
-        });
+        patch(url);
     };
 
 

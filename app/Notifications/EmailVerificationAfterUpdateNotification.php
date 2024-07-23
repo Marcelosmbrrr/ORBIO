@@ -8,17 +8,15 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
 
-class EmailVerificationNotification extends Notification
+class EmailVerificationAfterUpdateNotification extends Notification
 {
     use Queueable;
 
-    private string $password;
-
-    public function __construct(string $password)
-    {
-        $this->password = $password;
-    }
-
+    /**
+     * Get the notification's delivery channels.
+     *
+     * @return array<int, string>
+     */
     public function via(object $notifiable): array
     {
         return ['mail'];
@@ -29,11 +27,10 @@ class EmailVerificationNotification extends Notification
         $verificationUrl = $this->verificationUrl($notifiable);
 
         return (new MailMessage)
-            ->subject('Verificação do e-mail')
-            ->line('Por favor, clique no botão abaixo para verificar seu endereço de email.')
+            ->subject('Verificação do novo e-mail')
+            ->line('Verificamos que o seu e-mail foi alterado. Por favor, clique no botão abaixo para verificar seu novo endereço de email.')
             ->action('Verificar Endereço de Email', $verificationUrl)
-            ->line('Utilize esta senha para acessar a conta: ' . $this->password)
-            ->line('Se você não criou uma conta, nenhuma ação adicional é necessária.');
+            ->line('Se você não atualizou o seu endereço de e-mail, entre em contato com o suporte.');
     }
 
     protected function verificationUrl($notifiable)
@@ -44,6 +41,11 @@ class EmailVerificationNotification extends Notification
         );
     }
 
+    /**
+     * Get the array representation of the notification.
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(object $notifiable): array
     {
         return [

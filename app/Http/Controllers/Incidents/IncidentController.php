@@ -40,7 +40,7 @@ class IncidentController extends Controller
         ]);
 
         return redirect()->route('service-orders.show', ['service_order' => $service_order_id])
-            ->with('success', "Incidente editado!");
+            ->with('success', "A criação do incidente foi bem sucedida");
     }
 
     public function edit(string $service_order_id, string $incident_id)
@@ -71,7 +71,7 @@ class IncidentController extends Controller
         $incident->update($request->validated());
 
         return redirect()->route('service-orders.show', ['service_order' => $service_order_id])
-            ->with('success', "Incidente editado!");
+            ->with('success', "A edição do incidente foi bem sucedida");
     }
 
     public function destroy(string $service_order_id)
@@ -86,6 +86,6 @@ class IncidentController extends Controller
         });
 
         return redirect()->route('service-orders.show', ['service_order' => $service_order_id])
-            ->with('success', "Incidente(s) deletado(s)!");
+            ->with('success', "Os incidentes selecionados foram permanentemente deletados");
     }
 }

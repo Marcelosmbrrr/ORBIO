@@ -38,7 +38,7 @@ class EquipmentController extends Controller
             ->orderBy($order_by)
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'equipments', (int) $page);
 
-        return Inertia::render("Authenticated/Equipments/Equipments/Index", [
+        return Inertia::render("Authenticated/Equipments/Index", [
             "data" => new EquipmentResource($data),
             "queryParams" => request()->query() ?: null,
             "success" => session('success'),
@@ -49,7 +49,7 @@ class EquipmentController extends Controller
     {
         Gate::authorize('equipments:write');
 
-        return Inertia::render("Authenticated/Equipments/Equipments/CreateEquipment");
+        return Inertia::render("Authenticated/Equipments/CreateEquipment");
     }
 
     public function store(CreateEquipmentRequest $request)
@@ -72,7 +72,7 @@ class EquipmentController extends Controller
         }
 
         return redirect()->route('equipments.index', ['search' => $equipment->public_id->toString()])
-            ->with('success', 'Equipamento criado!');
+            ->with('success', 'A criação do equipamento foi bem sucedida');
     }
 
     public function show(string $id)
@@ -81,7 +81,7 @@ class EquipmentController extends Controller
 
         $equipment = $this->model->withTrashed()->where("public_id", $id)->first();
 
-        return Inertia::render("Authenticated/Equipments/Equipments/ShowEquipment", [
+        return Inertia::render("Authenticated/Equipments/ShowEquipment", [
             "equipment" => [
                 "id" => $equipment->public_id,
                 "name" => $equipment->name,
@@ -105,7 +105,7 @@ class EquipmentController extends Controller
 
         $equipment = $this->model->withTrashed()->where("public_id", $id)->first();
 
-        return Inertia::render("Authenticated/Equipments/Equipments/EditEquipment", [
+        return Inertia::render("Authenticated/Equipments/EditEquipment", [
             "equipment" => [
                 "id" => $equipment->public_id,
                 "name" => $equipment->name,
@@ -131,7 +131,7 @@ class EquipmentController extends Controller
         }
 
         return redirect()->route('equipments.index', ['search' => $equipment->public_id])
-            ->with('success', "Equipamento editado!");
+            ->with('success', "A edição do equipamento foi bem sucedida");
     }
 
     public function destroy()
@@ -148,6 +148,6 @@ class EquipmentController extends Controller
         });
 
         return to_route('equipments.index')
-            ->with('success', "Equipamento(s) deletado(s)!");
+            ->with('success', "Os equipmentos selecionados foram deletados");
     }
 }

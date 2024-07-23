@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function CreateBattery() {
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const { data, setData, post, processing, errors } = useForm({
         name: "",
@@ -18,12 +15,7 @@ export default function CreateBattery() {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        post("/batteries", {
-            onError: (e) => {
-                //console.log(e)
-                enqueueSnackbar("Erro ao criar o bateria!", { variant: "error" });
-            }
-        });
+        post("/batteries");
     };
 
     function onChangeImage(e: any) {

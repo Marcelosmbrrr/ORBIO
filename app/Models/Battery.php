@@ -14,6 +14,13 @@ class Battery extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'last_charge' => 'datetime'
+        ];
+    }
+
     function tenant()
     {
         return $this->belongsTo(User::class, "tenant_id");

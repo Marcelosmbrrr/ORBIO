@@ -89,7 +89,7 @@ class FlightPlanController extends Controller
         });
 
         return to_route('flight-plans.index')
-            ->with('success', "Plano de voo criado!");
+            ->with('success', "A criação do plano de voo foi bem sucedida");
     }
 
     public function show(string $id)
@@ -143,7 +143,7 @@ class FlightPlanController extends Controller
     {
         Gate::authorize('flight-plans:write');
 
-        $flight_plan = DB::transaction(function () use ($request) {
+        $flight_plan = DB::transaction(function () use ($request, $id) {
 
             $flight_plan = $this->model->withTrashed()->where("public_id", $id)->first();
 
@@ -172,7 +172,7 @@ class FlightPlanController extends Controller
         });
 
         return response([
-            "message" => "Plano de voo criado"
+            "message" => "A edição do plano de voo foi bem sucedida"
         ], 200);
     }
 
@@ -190,6 +190,6 @@ class FlightPlanController extends Controller
         });
 
         return to_route('flight-plans.index')
-            ->with('success', "Plano(s) de voo excluídos(s)!");
+            ->with('success', "Os planos de voo selecionados foram deletados");
     }
 }

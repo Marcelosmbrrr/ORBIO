@@ -5,8 +5,6 @@ import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function CreatePilot() {
 
-    const { enqueueSnackbar } = useSnackbar();
-
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
@@ -15,12 +13,7 @@ export default function CreatePilot() {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        post("/pilots", {
-            onError: (e) => {
-                //console.log(e)
-                enqueueSnackbar("Erro ao criar o usuário!", { variant: "error" });
-            }
-        });
+        post("/pilots");
     };
 
     return (

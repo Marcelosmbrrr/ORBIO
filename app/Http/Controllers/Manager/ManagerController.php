@@ -12,6 +12,7 @@ use App\Http\Requests\Manager\CreateManagerRequest;
 use App\Http\Requests\Manager\EditManagerRequest;
 use App\Http\Resources\Users\UserResource;
 use App\Events\UserCreated;
+use App\Events\UserEmailUpdated;
 
 class ManagerController extends Controller
 {
@@ -69,7 +70,7 @@ class ManagerController extends Controller
         event(new UserCreated($manager, $request->password));
 
         return redirect()->route('managers.index', ['search' => $manager->public_id->toString()])
-            ->with('success', 'A criação do gerente foi bem sucedida!');
+            ->with('success', 'A criação do gerente foi bem sucedida');
     }
 
     public function show(string $id)
@@ -112,11 +113,25 @@ class ManagerController extends Controller
         Gate::authorize('managers:write');
 
         $user = $this->model->withTrashed()->where("public_id", $id)->first();
+
+        $email_changed = $user->email !== $request->input('email');
+
         $user->update($request->validated());
 
+        if ($email_changed) {
+
+            $user->update([
+                'email_verified_at' => null
+            ]);
+
+            event(new UserEmailUpdated($user));
+            
+        }
+
         return redirect()->route('managers.index', ['search' => $user->public_id])
-            ->with('success', "A edição do gerente foi bem sucedida.");
+            ->with('success', "A edição do gerente foi bem sucedida");
     }
+
 
     public function destroy()
     {
@@ -129,6 +144,6 @@ class ManagerController extends Controller
         });
 
         return redirect()->route('managers.index', ['group' => "deleted"])
-            ->with('success', "Os gerentes selecionados foram deletados.");
+            ->with('success', "Os gerentes selecionados foram deletados");
     }
 }

@@ -1,13 +1,10 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function CreateDrone() {
 
-    const { enqueueSnackbar } = useSnackbar();
-
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
         name: "",
         manufacturer: "",
         model: "",
@@ -19,12 +16,7 @@ export default function CreateDrone() {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        post("/drones", {
-            onError: (e) => {
-                //console.log(e)
-                enqueueSnackbar("Erro ao criar o drone!", { variant: "error" });
-            }
-        });
+        post("/drones");
     };
 
     function onChangeImage(e: any) {

@@ -35,11 +35,7 @@ const CreateServiceOrder: React.FC = React.memo(() => {
             return;
         }
 
-        form.post("/service-orders", {
-            onError: () => {
-                enqueueSnackbar("O procedimento falhou.", { variant: "error" });
-            }
-        });
+        form.post("/service-orders");
     }, [form]);
 
     const [stepIndex, setStepIndex] = React.useState(0);

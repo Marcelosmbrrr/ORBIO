@@ -72,7 +72,7 @@ class BatteryController extends Controller
         }
 
         return redirect()->route('batteries.index', ['search' => $battery->public_id->toString()])
-            ->with('success', 'Bateria criada!');
+            ->with('success', 'A criação da bateria foi bem sucedida');
     }
 
     public function show(string $id)
@@ -130,7 +130,7 @@ class BatteryController extends Controller
         }
 
         return redirect()->route('batteries.index', ['search' => $battery->public_id])
-            ->with('success', "Bateria editada!");
+            ->with('success', "A edição da bateria foi bem sucedida");
     }
 
     public function destroy()
@@ -147,6 +147,6 @@ class BatteryController extends Controller
         });
 
         return to_route('batteries.index')
-            ->with('success', "Bateria(s) deletada(s)!");
+            ->with('success', "As baterias selecionadas foram deletadas");
     }
 }

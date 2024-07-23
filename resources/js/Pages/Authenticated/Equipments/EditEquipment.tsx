@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
 export default function EditEquipment({ equipment }: any) {
-
-    const { enqueueSnackbar } = useSnackbar();
 
     const { data, setData, patch, processing, errors } = useForm({
         name: equipment.name,
@@ -19,11 +16,7 @@ export default function EditEquipment({ equipment }: any) {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/equipments/" + equipment.id, {
-            onError: () => {
-                enqueueSnackbar("Erro ao editar o equipamento!", { variant: "error" });
-            }
-        });
+        patch("/equipments/" + equipment.id);
     };
 
     function onChangeImage(e: any) {

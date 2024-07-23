@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 import { logValidation } from '@/Utils/LogValidation';
 
@@ -18,18 +17,14 @@ const validationClassName = {
 export default function CreateLog(props: Props) {
 
     const [logs, setLogs] = React.useState<ProcessingLog[]>([]);
-    const { enqueueSnackbar } = useSnackbar();
 
-    const { data, post, setData, processing } = useForm({
+    const { post, setData, processing } = useForm({
         logs: [] as File[]
     });
 
     function submit() {
         const url = window.location.pathname.replace("/create", "");
-        post(url, {
-            data,
-            onError: () => enqueueSnackbar("Erro ao registrar os logs!", { variant: "error" }),
-        });
+        post(url);
     }
 
     async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
