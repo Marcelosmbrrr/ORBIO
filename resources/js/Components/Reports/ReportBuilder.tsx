@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Page, Text, View, Document, StyleSheet, PDFViewer, Image, pdf } from '@react-pdf/renderer';
 import moment from 'moment/moment';
-import BirdViewLogo from '../../../../../public/map/images/Birdview.png';
+import BirdViewLogo from '../../../../public/map/images/Birdview.png';
 
 interface SelectedLog {
     id: string;

@@ -20,11 +20,13 @@ class LogController extends Controller
         $this->serviceOrderModel = $serviceOrderModel;
     }
 
-    public function create()
+    public function create(string $service_order_id)
     {
         Gate::authorize('service-orders:edit');
 
-        return Inertia::render("Authenticated/ServiceOrders/Logs/CreateLog");
+        return Inertia::render("Authenticated/Logs/CreateLog", [
+            "service_order_id" => $service_order_id
+        ]);
     }
 
     public function store(CreateLogRequest $request, string $service_order_id)

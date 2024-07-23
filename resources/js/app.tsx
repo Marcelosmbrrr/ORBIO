@@ -18,11 +18,7 @@ createInertiaApp({
         root.render(
             <SnackbarProvider
                 maxSnack={3}
-                action={(snackbarId) => (
-                    <button onClick={() => closeSnackbar(snackbarId)}>
-                        Fechar
-                    </button>
-                )}
+                autoHideDuration={4000}
             >
                 <App {...props} />
             </SnackbarProvider>

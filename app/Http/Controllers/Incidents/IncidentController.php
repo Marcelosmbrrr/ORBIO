@@ -20,11 +20,13 @@ class IncidentController extends Controller
         $this->serviceOrderModel = $serviceOrderModel;
     }
 
-    public function create()
+    public function create(string $service_order_id)
     {
         Gate::authorize('service-orders:edit');
 
-        return Inertia::render("Authenticated/ServiceOrders/Incidents/CreateIncident");
+        return Inertia::render("Authenticated/Incidents/CreateIncident", [
+            'service_order_id' => $service_order_id
+        ]);
     }
 
     public function store(CreateIncidentRequest $request, string $service_order_id)
@@ -49,10 +51,9 @@ class IncidentController extends Controller
 
         $incident = $this->incidentModel->where("public_id", $incident_id)->first();
 
-        return Inertia::render("Authenticated/ServiceOrders/Incidents/EditIncident", [
-            "service_order" => [
-                "id" => $service_order_id
-            ],
+        return Inertia::render("Authenticated/Incidents/EditIncident", [
+            "incident_id" => $incident_id,
+            "service_order_id" => $service_order_id,
             "incident" => [
                 "id" => $incident->public_id,
                 "type" => $incident->type,

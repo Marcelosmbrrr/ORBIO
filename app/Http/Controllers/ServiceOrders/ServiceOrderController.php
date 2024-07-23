@@ -183,16 +183,21 @@ class ServiceOrderController extends Controller
         if ($request->situation) {
 
             $data["situation"] = $request->situation;
+            $message = "";
             if ($request->situation === "approved") {
                 $data["attendant_id"] = Auth::user()->id;
+                $message = "A ordem de serviço foi aprovada";
             } else if ($request->situation === "canceled") {
                 $data["observation"] = $request->observation;
+                $message = "A ordem de serviço foi cancelada";
+            } else if ($request->situation === "finished") {
+                $message = "A ordem de serviço foi finalizada";
             }
 
             $service_order->update($data);
 
             return redirect()->route('service-orders.show', ['service_order' => $service_order->public_id])
-                ->with('success', "A situação foi atualizada");
+                ->with('success', $message);
         } else if ((bool) $request->report) {
 
             $public_id = Str::uiid();
@@ -218,6 +223,8 @@ class ServiceOrderController extends Controller
         $service_order = $this->model->where("public_id", $id)->first();
 
         return Inertia::render("Authenticated/ServiceOrders/ShowServiceOrder", [
+            "success" => session("success"),
+            "service_order_id" => $id,
             "can" => [
                 "edit" => Auth::user()->role === "piloto",
                 "edit_log" => $service_order->attendant && $service_order->situation === "approved" ? $service_order->attendant->id === Auth::user()->id : false,

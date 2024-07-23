@@ -23,8 +23,8 @@ export function DeleteOrUndeleteResource(props: Props) {
         if (props.action === "delete") {
 
             form.delete(props.request_url, {
-                onSuccess: () => {
-                    enqueueSnackbar("Recurso(s) Excluído(s)!", { variant: "success" });
+                onSuccess: (e) => {
+                    enqueueSnackbar('Os registros selecionados foram excluídos', { variant: "success" });
                     setOpen(false);
                     props.reload({ group: "all" });
                 }
@@ -34,7 +34,7 @@ export function DeleteOrUndeleteResource(props: Props) {
 
             form.patch(props.request_url, {
                 onSuccess: () => {
-                    enqueueSnackbar("Recurso(s) Recuperado(s)!", { variant: "success" });
+                    enqueueSnackbar("Os registros selecionados foram recuperados", { variant: "success" });
                     setOpen(false);
                     props.reload({ group: "all" });
                 }

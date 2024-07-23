@@ -10,6 +10,7 @@ import { EquipmentList } from '@/Components/ServiceOrders/Show/EquipmentList';
 import { LogList } from '@/Components/ServiceOrders/Show/LogList';
 import { ReportList } from '@/Components/ServiceOrders/Show/ReportList';
 import { IncidentList } from '@/Components/ServiceOrders/Show/IncidentList';
+import { Alert } from '@/Components/Alert';
 import { ServiceOrderRecord } from './types';
 
 type List = 'flightplans' | 'drones' | 'batteries' | 'equipments' | 'incidents' | 'logs' | 'reports';
@@ -21,7 +22,7 @@ const badges: { [key: string]: string } = {
     canceled: "bg-red-100 text-red-800 text-md font-medium me-2 px-3 py-1 rounded dark:bg-red-900 dark:text-red-300"
 };
 
-const ShowServiceOrder = React.memo(({ can, serviceorder }: { can: { edit: boolean, edit_log: boolean, edit_report: boolean }, serviceorder: { data: ServiceOrderRecord } }) => {
+const ShowServiceOrder = React.memo(({ success, can, serviceorder }: { sucess: string, can: { edit: boolean, edit_log: boolean, edit_report: boolean }, serviceorder: { data: ServiceOrderRecord } }) => {
 
     const [list, setList] = React.useState<List>('flightplans');
     const [cancel, setCancel] = React.useState<boolean>(false);
@@ -262,6 +263,10 @@ const ShowServiceOrder = React.memo(({ can, serviceorder }: { can: { edit: boole
                         <div className='my-5'>
                             <h2 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">Recursos</h2>
                         </div>
+
+                        {success &&
+                            <Alert type='success' message={success} />
+                        }
 
                         <div className="space-y-5 border-b border-gray-200 dark:border-gray-700">
                             <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">

@@ -34,8 +34,8 @@ class ReportController extends Controller
 
         $service_order = $this->serviceOrderModel->with(['pilot', 'client', 'drones', 'batteries', 'equipments', 'flight_plans', 'incidents'])->where("public_id", $service_order_id)->first();
 
-        return Inertia::render("Authenticated/ServiceOrders/Reports/CreateReport", [
-            "serviceorder" => new CreateReportResource($service_order),
+        return Inertia::render("Authenticated/Reports/CreateReport", [
+            "service_order" => new CreateReportResource($service_order),
             "logs" => fn () => new LogResource(
                 $this->logModel
                     ->where("service_order_id", $service_order->id)

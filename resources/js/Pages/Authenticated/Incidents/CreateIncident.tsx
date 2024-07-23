@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
-import { useForm, Link } from '@inertiajs/react';
+import { usePage, useForm, Link } from '@inertiajs/react';
 
 interface Props {
     service_order_id: string;
 }
 
 export default function CreateIncident(props: Props) {
+
+    const { service_order_id }: any = usePage().props;
 
     const { data, setData, post, processing, errors } = useForm({
         type: '',
@@ -17,8 +19,7 @@ export default function CreateIncident(props: Props) {
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
 
-        const url = window.location.pathname.replace("/create", "");
-        post(url);
+        post(route('incidents.store', { service_order: service_order_id }));
     };
 
     return (

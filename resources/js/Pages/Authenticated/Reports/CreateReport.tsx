@@ -48,8 +48,8 @@ type FormData = yup.InferType<typeof schema>;
 
 export default function CreateReport() {
     
-    const { serviceorder }: any = usePage().props;
-    const { name, pilot, client, location } = serviceorder.data;
+    const { service_order }: any = usePage().props;
+    const { name, pilot, client, location } = service_order.data;
 
     const [processing, setProcessing] = React.useState<boolean>(false);
     const [step, setStep] = React.useState(1);

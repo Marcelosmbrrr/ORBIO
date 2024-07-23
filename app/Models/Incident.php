@@ -12,6 +12,13 @@ class Incident extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'date' => 'datetime'
+        ];
+    }
+
     function service_order()
     {
         return $this->belongsTo(ServiceOrder::class, "service_order_id");

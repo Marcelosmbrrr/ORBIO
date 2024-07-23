@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
-import { useForm, Link } from '@inertiajs/react';
+import { usePage, useForm, Link } from '@inertiajs/react';
 
-export default function EditIncident({ service_order, incident }: any) {
+export default function EditIncident() {
+
+    const { service_order_id, incident }: any = usePage().props;
 
     const { data, setData, patch, processing, errors } = useForm({
         type: incident.type,
@@ -13,8 +15,7 @@ export default function EditIncident({ service_order, incident }: any) {
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
 
-        const url = window.location.pathname.replace("/edit", "");
-        patch(url);
+        patch(route('incidents.update', { service_order: service_order_id, incident: incident.id }));
     };
 
 
@@ -77,7 +78,7 @@ export default function EditIncident({ service_order, incident }: any) {
                             </div>
                         </div>
                         <div className='flex justify-end py-3'>
-                            <Link href={route('service-orders.show', { id: service_order })} className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                            <Link href={route('service-orders.show', { service_order: service_order_id })} className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                                 Voltar
                             </Link>
                             <button disabled={processing} type="submit" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
