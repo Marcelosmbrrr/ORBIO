@@ -22,7 +22,7 @@ const badges: { [key: string]: string } = {
     canceled: "bg-red-100 text-red-800 text-md font-medium me-2 px-3 py-1 rounded dark:bg-red-900 dark:text-red-300"
 };
 
-const ShowServiceOrder = React.memo(({ success, can, serviceorder }: { sucess: string, can: { edit: boolean, edit_log: boolean, edit_report: boolean }, serviceorder: { data: ServiceOrderRecord } }) => {
+const ShowServiceOrder = React.memo(({ success, can, serviceorder }: { success: string, can: { edit: boolean, edit_log: boolean, edit_report: boolean }, serviceorder: { data: ServiceOrderRecord } }) => {
 
     const [list, setList] = React.useState<List>('flightplans');
     const [cancel, setCancel] = React.useState<boolean>(false);
