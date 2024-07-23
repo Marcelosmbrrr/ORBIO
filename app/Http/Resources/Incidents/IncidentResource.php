@@ -11,12 +11,12 @@ class IncidentResource extends ResourceCollection
     {
         return $this->collection->map(function ($report) {
             return [
-                "id" => $report->public_id,
-                "type" => $report->type,
-                "description" => $report->description,
-                "date" => date("d/m/Y", strtotime($report->date)),
-                "created_at" => $report->created_at->format('d/m/Y'),
-                "updated_at" => $report->updated_at->format('d/m/Y'),
+                'id' => $report->public_id,
+                'type' => $report->type,
+                'description' => $report->description,
+                'date' => date('d/m/Y', strtotime($report->date)),
+                'created_at' => $report->created_at->format('d/m/Y'),
+                'updated_at' => $report->updated_at->format('d/m/Y'),
             ];
         })->all();
     }

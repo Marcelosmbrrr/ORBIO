@@ -14,14 +14,14 @@ class DeactivateAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "password" => ["required"],
+            'password' => ['required'],
         ];
     }
 
     public function messages()
     {
         return [
-            "password.required" => "Informe a senha"
+            'password.required' => 'Informe a senha',
         ];
     }
 }

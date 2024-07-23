@@ -9,6 +9,7 @@ class Address extends Model
 {
     use HasFactory;
 
-    public $table = "addresses";
+    public $table = 'addresses';
+
     protected $guarded = [];
 }

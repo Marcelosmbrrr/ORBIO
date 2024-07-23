@@ -17,17 +17,17 @@ class EditBasicDataRequest extends FormRequest
         $user_id = Auth::user()->id;
 
         return [
-            "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email," . $user_id]
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users,email,'.$user_id],
         ];
     }
 
     public function messages()
     {
         return [
-            "name.required" => "Informe o nome",
-            "email.required" => "Informe o e-mail",
-            "email.unique" => "Esse e-mail já existe"
+            'name.required' => 'Informe o nome',
+            'email.required' => 'Informe o e-mail',
+            'email.unique' => 'Esse e-mail já existe',
         ];
     }
 }

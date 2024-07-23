@@ -14,9 +14,9 @@ class CreateManagerRequest extends FormRequest
 
     public function prepareForValidation()
     {
-        if (!$this->filled('password')) {
+        if (! $this->filled('password')) {
             $this->merge([
-                'password' => Str::random(10)
+                'password' => Str::random(10),
             ]);
         }
     }
@@ -24,19 +24,19 @@ class CreateManagerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email"],
-            "password" => ["sometimes"]
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['sometimes'],
         ];
     }
 
     public function messages()
     {
         return [
-            "name.required" => "informe o nome",
-            "email.required" => "informe o e-mail",
-            "email.email" => "e-mail inválido",
-            "email.unique" => "e-mail já existe"
+            'name.required' => 'informe o nome',
+            'email.required' => 'informe o e-mail',
+            'email.email' => 'e-mail inválido',
+            'email.unique' => 'e-mail já existe',
         ];
     }
 }

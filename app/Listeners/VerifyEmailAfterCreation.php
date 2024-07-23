@@ -4,9 +4,9 @@ namespace App\Listeners;
 
 //use Illuminate\Contracts\Queue\ShouldQueue;
 //use Illuminate\Queue\InteractsWithQueue;
+use App\Events\UserCreated;
 use App\Notifications\EmailVerificationNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Events\UserCreated;
 
 class VerifyEmailAfterCreation
 {
@@ -15,7 +15,7 @@ class VerifyEmailAfterCreation
      */
     public function handle(UserCreated $event): void
     {
-        if ($event->user instanceof MustVerifyEmail && !$event->user->hasVerifiedEmail()) {
+        if ($event->user instanceof MustVerifyEmail && ! $event->user->hasVerifiedEmail()) {
             $event->user->notify(new EmailVerificationNotification($event->password));
         }
     }

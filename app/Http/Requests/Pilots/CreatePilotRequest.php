@@ -14,9 +14,9 @@ class CreatePilotRequest extends FormRequest
 
     public function prepareForValidation()
     {
-        if (!$this->filled('password')) {
+        if (! $this->filled('password')) {
             $this->merge([
-                'password' => Str::random(10)
+                'password' => Str::random(10),
             ]);
         }
     }
@@ -24,18 +24,18 @@ class CreatePilotRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email"],
-            "password" => ["sometimes"]
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['sometimes'],
         ];
     }
 
     public function messages()
     {
         return [
-            "name.required" => "Informe o nome",
-            "email.email" => "Email inválido",
-            "email.unique" => "E-mail já existe"
+            'name.required' => 'Informe o nome',
+            'email.email' => 'Email inválido',
+            'email.unique' => 'E-mail já existe',
         ];
     }
 }

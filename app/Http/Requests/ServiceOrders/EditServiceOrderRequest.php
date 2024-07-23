@@ -14,11 +14,11 @@ class EditServiceOrderRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            "situation" => ["nullable", 'string']
+            'situation' => ['nullable', 'string'],
         ];
 
         if ($this->input('situation') === 'canceled') {
-            $rules['observation'] = ["required", "min:10", "max:255"];
+            $rules['observation'] = ['required', 'min:10', 'max:255'];
         }
 
         return $rules;
@@ -27,8 +27,8 @@ class EditServiceOrderRequest extends FormRequest
     public function messages()
     {
         return [
-            "observation.required" => "Informe a justificativa",
-            "observation.min" => "Deve ter no mínimo 10 caracteres"
+            'observation.required' => 'Informe a justificativa',
+            'observation.min' => 'Deve ter no mínimo 10 caracteres',
         ];
     }
 }

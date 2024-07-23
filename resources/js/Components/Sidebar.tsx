@@ -105,7 +105,7 @@ export const Sidebar = React.memo(() => {
 
                     <li>
                         <div className="flex items-center p-2 rounded-lg text-white">
-                            <span className="text-2xl font-bold tracking-tight font-sans">Ordrone (alfa)</span>
+                            <span className="text-2xl font-bold tracking-tight font-sans">Orbio (alfa)</span>
                         </div>
                     </li>
 

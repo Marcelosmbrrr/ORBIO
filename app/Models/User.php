@@ -4,17 +4,9 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\ServiceOrder;
-use App\Models\FlightPlan;
-use App\Models\Drone;
-use App\Models\Battery;
-use App\Models\Equipment;
-use App\Models\Address;
-use App\Models\Document;
-use App\Models\Contact;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -35,35 +27,35 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    function tenant()
+    public function tenant()
     {
         if (in_array($this->role, ['gerente', 'piloto'])) {
-            return $this->belongsTo(User::class, "user_id");
+            return $this->belongsTo(User::class, 'user_id');
         }
 
         return null;
     }
 
-    function users()
+    public function users()
     {
         if ($this->role == 'gerente') {
-            return $this->hasMany(User::class, "user_id");
+            return $this->hasMany(User::class, 'user_id');
         }
 
         return null;
     }
 
-    function address()
+    public function address()
     {
         return $this->hasOne(Address::class);
     }
 
-    function contact()
+    public function contact()
     {
         return $this->hasOne(Contact::class);
     }
 
-    function document()
+    public function document()
     {
         return $this->hasOne(Document::class);
     }
@@ -72,63 +64,63 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         if ($this->role == 'gerente') {
             return $this->hasMany(ServiceOrder::class);
-        } else if (in_array($this->role, ['piloto', 'cliente'])) {
+        } elseif (in_array($this->role, ['piloto', 'cliente'])) {
             return $this->belongsToMany(ServiceOrder::class, 'service_order_user');
         }
 
         return null;
     }
 
-    function flight_plans()
+    public function flight_plans()
     {
         if (in_array($this->role, ['gerente', 'piloto'])) {
-            return $this->hasMany(FlightPlan::class, "tenant_id");
+            return $this->hasMany(FlightPlan::class, 'tenant_id');
         }
 
         return null;
     }
 
-    function drones()
+    public function drones()
     {
-        return $this->hasMany(Drone::class, "tenant_id");
+        return $this->hasMany(Drone::class, 'tenant_id');
     }
 
-    function batteries()
+    public function batteries()
     {
-        return $this->hasMany(Battery::class, "tenant_id");
+        return $this->hasMany(Battery::class, 'tenant_id');
     }
 
-    function equipment()
+    public function equipment()
     {
-        return $this->hasMany(Equipment::class, "tenant_id");
+        return $this->hasMany(Equipment::class, 'tenant_id');
     }
 
     // Acessors and mutators
 
     public function getFirstNameAttribute(): string
     {
-        return explode(" ", $this->name)[0];
+        return explode(' ', $this->name)[0];
     }
 
     // Scopes
 
-    function scopeSearch($query, $value)
+    public function scopeSearch($query, $value)
     {
         return $query->when((bool) $value, function ($query) use ($value) {
             $query
                 ->where('users.public_id', $value)
-                ->orWhere('users.name', 'LIKE', '%' . $value . '%')
-                ->orWhere('users.email', 'LIKE', '%' . $value . '%');
+                ->orWhere('users.name', 'LIKE', '%'.$value.'%')
+                ->orWhere('users.email', 'LIKE', '%'.$value.'%');
         });
     }
 
-    function scopeFilter($query, string $filter)
+    public function scopeFilter($query, string $filter)
     {
-        if ($filter === "verified") {
-            return $query->where("email_verified_at", "!=", null)->where("deleted_at", null);
-        } else if ($filter === "unverified") {
-            return $query->where("email_verified_at", null)->where("deleted_at", null);
-        } else if ($filter === "deleted") {
+        if ($filter === 'verified') {
+            return $query->where('email_verified_at', '!=', null)->where('deleted_at', null);
+        } elseif ($filter === 'unverified') {
+            return $query->where('email_verified_at', null)->where('deleted_at', null);
+        } elseif ($filter === 'deleted') {
             return $query->onlyTrashed();
         }
     }

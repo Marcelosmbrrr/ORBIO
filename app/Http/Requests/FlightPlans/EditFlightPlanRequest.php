@@ -14,18 +14,18 @@ class EditFlightPlanRequest extends FormRequest
 
     public function rules(): array
     {
-        $flight_plan_id = $this->route("flight_plan");
+        $flight_plan_id = $this->route('flight_plan');
 
         $uniqueRule = Rule::unique('flight_plans')
             ->where('tenant_id', session('tenant_id'))
             ->ignore($flight_plan_id);
 
         return [
-            "name" => ["required", $uniqueRule],
-            "image" => ["required", "image"],
-            "single_file" => ["required", "file", "mimes:txt"],
-            "multi_file" => ["required", "array"],
-            'multi_file.*' => ["file", "mimes:txt"]
+            'name' => ['required', $uniqueRule],
+            'image' => ['required', 'image'],
+            'single_file' => ['required', 'file', 'mimes:txt'],
+            'multi_file' => ['required', 'array'],
+            'multi_file.*' => ['file', 'mimes:txt'],
         ];
     }
 

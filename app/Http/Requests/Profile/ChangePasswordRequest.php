@@ -14,16 +14,16 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "password" => ["required"],
-            "new_password" => ["required"]
+            'password' => ['required'],
+            'new_password' => ['required'],
         ];
     }
 
     public function messages()
     {
         return [
-            "password.required" => "Informe a senha atual",
-            "new_password.required" => "Informe a nova senha"
+            'password.required' => 'Informe a senha atual',
+            'new_password.required' => 'Informe a nova senha',
         ];
     }
 }

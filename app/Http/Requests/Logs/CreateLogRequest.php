@@ -14,8 +14,8 @@ class CreateLogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "logs" => ["required", 'array'],
-            "logs.*" => ["file", "extensions:kml"],
+            'logs' => ['required', 'array'],
+            'logs.*' => ['file', 'extensions:kml'],
         ];
     }
 }

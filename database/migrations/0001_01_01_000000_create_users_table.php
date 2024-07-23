@@ -16,9 +16,9 @@ return new class extends Migration
             $table->uuid('public_id')->unique();
             $table->foreignId('tenant_id')->nullable()->constrained('users');
             $table->enum('role', ['admin', 'gerente', 'piloto', 'cliente']);
-            $table->string("name");
-            $table->string("email")->unique();
-            $table->string("password");
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

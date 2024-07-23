@@ -14,16 +14,16 @@ class CreateReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => ["required", "min:3", "max:255"],
-            "report" => ["required", "file", "mimes:pdf"]
+            'name' => ['required', 'min:3', 'max:255'],
+            'report' => ['required', 'file', 'mimes:pdf'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            "name.required" => "O campo nome é obrigatório.",
-            "name.string" => "O campo nome deve ser uma string."
+            'name.required' => 'O campo nome é obrigatório.',
+            'name.string' => 'O campo nome deve ser uma string.',
         ];
     }
 }

@@ -13,15 +13,15 @@ class EditClientRequest extends FormRequest
 
     public function rules(): array
     {
-        $public_id = $this->route("client");
+        $public_id = $this->route('client');
 
         $rules = [
-            "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email," . $public_id . ",public_id"]
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users,email,'.$public_id.',public_id'],
         ];
 
         if ($this->filled('password')) {
-            $rules['password'] = ["sometimes"];
+            $rules['password'] = ['sometimes'];
         }
 
         return $rules;
@@ -30,9 +30,9 @@ class EditClientRequest extends FormRequest
     public function messages()
     {
         return [
-            "name.required" => "Informe o nome",
-            "email.email" => "Email inválido",
-            "email.unique" => "E-mail já existe"
+            'name.required' => 'Informe o nome',
+            'email.email' => 'Email inválido',
+            'email.unique' => 'E-mail já existe',
         ];
     }
 }

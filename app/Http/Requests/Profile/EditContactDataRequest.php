@@ -14,17 +14,17 @@ class EditContactDataRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "ddd" => ["required"],
-            "phone_number" => ["required", "regex:^9?\d{8}$^"]
+            'ddd' => ['required'],
+            'phone_number' => ['required', "regex:^9?\d{8}$^"],
         ];
     }
 
     public function messages()
     {
         return [
-            "ddd.required" => "Informe o ddd",
-            "phone_number.required" => "Informe o número do telefone",
-            "phone_number.regex" => "Formato inválido"
+            'ddd.required' => 'Informe o ddd',
+            'phone_number.required' => 'Informe o número do telefone',
+            'phone_number.regex' => 'Formato inválido',
         ];
     }
 }

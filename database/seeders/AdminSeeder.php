@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
-use App\Models\User;
 
 class AdminSeeder extends Seeder
 {
@@ -15,12 +14,12 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         $admin = User::create([
-            "public_id" => Str::uuid(),
-            "name" => "Admin",
-            "role" => "admin",
-            "email" => env("ADMIN_EMAIL"), 
-            "password" => env("ADMIN_PASSWORD"), 
-            "email_verified_at" => now()
+            'public_id' => Str::uuid(),
+            'name' => 'Admin',
+            'role' => 'admin',
+            'email' => env('ADMIN_EMAIL'),
+            'password' => env('ADMIN_PASSWORD'),
+            'email_verified_at' => now(),
         ]);
 
         $admin->address()->create();

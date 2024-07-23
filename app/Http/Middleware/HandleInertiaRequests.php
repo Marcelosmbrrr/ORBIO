@@ -3,8 +3,8 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
-use Inertia\Middleware;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -18,7 +18,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -36,39 +36,39 @@ class HandleInertiaRequests extends Middleware
 
             $user_role = Auth::user()->role;
 
-            $authorization["managers"] = [
-                "read" => $user_role === "admin",
-                "write" => $user_role === "admin"
+            $authorization['managers'] = [
+                'read' => $user_role === 'admin',
+                'write' => $user_role === 'admin',
             ];
 
-            $authorization["users"] = [
-                "read" => $user_role === "gerente",
-                "write" => $user_role === "gerente"
+            $authorization['users'] = [
+                'read' => $user_role === 'gerente',
+                'write' => $user_role === 'gerente',
             ];
 
-            $authorization["flightplans"] = [
-                "read" => $user_role === "gerente" || $user_role === "piloto",
-                "write" => $user_role === "gerente" || $user_role === "piloto",
+            $authorization['flightplans'] = [
+                'read' => $user_role === 'gerente' || $user_role === 'piloto',
+                'write' => $user_role === 'gerente' || $user_role === 'piloto',
             ];
 
-            $authorization["serviceorders"] = [
-                "read" => $user_role != "admin",
-                "create" => $user_role === "gerente",
-                "edit" => $user_role === "piloto"
+            $authorization['serviceorders'] = [
+                'read' => $user_role != 'admin',
+                'create' => $user_role === 'gerente',
+                'edit' => $user_role === 'piloto',
             ];
 
-            $authorization["equipments"] = [
-                "read" => $user_role === "gerente" || $user_role === "piloto",
-                "write" => $user_role === "gerente" || $user_role === "piloto",
+            $authorization['equipments'] = [
+                'read' => $user_role === 'gerente' || $user_role === 'piloto',
+                'write' => $user_role === 'gerente' || $user_role === 'piloto',
             ];
 
             $auth = [
-                "user" => [
-                    "id" => Auth::user()->public_id,
-                    "name" => Auth::user()->first_name,
-                    "role" => $user_role,
-                    "authorization" => $authorization
-                ]
+                'user' => [
+                    'id' => Auth::user()->public_id,
+                    'name' => Auth::user()->first_name,
+                    'role' => $user_role,
+                    'authorization' => $authorization,
+                ],
             ];
         }
 

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('serial_number');
             $table->double('weight', 8, 2);
             $table->string('observation')->nullable(true);
-            $table->string("image")->nullable(true);
+            $table->string('image')->nullable(true);
             $table->unique(['tenant_id', 'name']);
             $table->timestamps();
             $table->softDeletes();

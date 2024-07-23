@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers\Client;
 
+use App\Events\UserCreated;
+use App\Events\UserEmailUpdated;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
-use App\Models\User;
 use App\Http\Requests\Clients\CreateClientRequest;
 use App\Http\Requests\Clients\EditClientRequest;
 use App\Http\Resources\Users\UserResource;
-use App\Events\UserCreated;
-use App\Events\UserEmailUpdated;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class ClientController extends Controller
 {
-    function __construct(User $userModel)
+    public function __construct(User $userModel)
     {
         $this->model = $userModel;
     }
@@ -26,25 +25,25 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:read');
 
-        $order_by = request("order_by", "id");
-        $limit = request("limit", "10");
-        $page = request("page", "1");
-        $search = request("search", "");
-        $group = request("group", "all");
+        $order_by = request('order_by', 'id');
+        $limit = request('limit', '10');
+        $page = request('page', '1');
+        $search = request('search', '');
+        $group = request('group', 'all');
 
         $data = $this->model
             ->withTrashed()
             ->where('tenant_id', session('tenant_id'))
-            ->where("role", "cliente")
+            ->where('role', 'cliente')
             ->filter($group) // scope
             ->search($search) // scope
             ->orderBy($order_by)
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'clients', (int) $page);
 
-        return Inertia::render("Authenticated/Clients/Index", [
-            "data" => new UserResource($data),
-            "queryParams" => request()->query() ?: null,
-            "success" => session('success'),
+        return Inertia::render('Authenticated/Clients/Index', [
+            'data' => new UserResource($data),
+            'queryParams' => request()->query() ?: null,
+            'success' => session('success'),
         ]);
     }
 
@@ -52,7 +51,7 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        return Inertia::render("Authenticated/Clients/CreateClient");
+        return Inertia::render('Authenticated/Clients/CreateClient');
     }
 
     public function store(CreateClientRequest $request)
@@ -61,8 +60,8 @@ class ClientController extends Controller
 
         $client = $this->model->create([
             ...$request->validated(),
-            "role" => "cliente",
-            "tenant_id" => session("tenant_id"),
+            'role' => 'cliente',
+            'tenant_id' => session('tenant_id'),
             'public_id' => Str::uuid(),
         ]);
 
@@ -80,19 +79,19 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $client = $this->model->withTrashed()->where("public_id", $id)->first();
+        $client = $this->model->withTrashed()->where('public_id', $id)->first();
 
-        return Inertia::render("Authenticated/Clients/ShowClient", [
-            "user" => [
-                "id" => $client->public_id,
-                "name" => $client->name,
-                "role" => $client->role,
-                "email" => $client->email,
-                "status" => $client->trashed() ? "Deletado" : ($client->status ? "Ativo" : "Inativo"),
-                "created_at" => $client->created_at->format('d/m/Y'),
-                "updated_at" => $client->updated_at->format('d/m/Y'),
-                "deleted_at" => $client->deleted_at
-            ]
+        return Inertia::render('Authenticated/Clients/ShowClient', [
+            'user' => [
+                'id' => $client->public_id,
+                'name' => $client->name,
+                'role' => $client->role,
+                'email' => $client->email,
+                'status' => $client->trashed() ? 'Deletado' : ($client->status ? 'Ativo' : 'Inativo'),
+                'created_at' => $client->created_at->format('d/m/Y'),
+                'updated_at' => $client->updated_at->format('d/m/Y'),
+                'deleted_at' => $client->deleted_at,
+            ],
         ]);
     }
 
@@ -100,15 +99,15 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $client = $this->model->withTrashed()->where("public_id", $id)->first();
+        $client = $this->model->withTrashed()->where('public_id', $id)->first();
 
-        return Inertia::render("Authenticated/Clients/EditClient", [
-            "user" => [
-                "id" => $client->public_id,
-                "name" => $client->name,
-                "email" => $client->email,
-                "role" => $client->role
-            ]
+        return Inertia::render('Authenticated/Clients/EditClient', [
+            'user' => [
+                'id' => $client->public_id,
+                'name' => $client->name,
+                'email' => $client->email,
+                'role' => $client->role,
+            ],
         ]);
     }
 
@@ -116,7 +115,7 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $client = $this->model->withTrashed()->where("public_id", $id)->first();
+        $client = $this->model->withTrashed()->where('public_id', $id)->first();
         $client->update($request->validated());
 
         $email_changed = $client->email !== $request->input('email');
@@ -126,31 +125,31 @@ class ClientController extends Controller
         if ($email_changed) {
 
             $client->update([
-                'email_verified_at' => null
+                'email_verified_at' => null,
             ]);
 
             event(new UserEmailUpdated($client));
-            
+
         }
 
         return redirect()->route('clients.index', ['search' => $client->public_id])
-            ->with('success', "A edição do cliente foi bem sucedida");
+            ->with('success', 'A edição do cliente foi bem sucedida');
     }
 
     public function destroy()
     {
         Gate::authorize('pilots-clients:write');
 
-        $ids = explode(",", request("ids"));
+        $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $users = $this->model->where("public_id", $ids)->get();
+            $users = $this->model->where('public_id', $ids)->get();
             foreach ($users as $client) {
                 $client->delete();
             }
         });
 
         return to_route('clients.index')
-            ->with('success', "Os clientes selecionados foram deletados");
+            ->with('success', 'Os clientes selecionados foram deletados');
     }
 }

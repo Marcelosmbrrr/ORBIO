@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->uuid('public_id')->unique();
             $table->foreignId('tenant_id')->constrained('users');
-            $table->string("name");
-            $table->string("state");
-            $table->string("city");
-            $table->string("file");
+            $table->string('name');
+            $table->string('state');
+            $table->string('city');
+            $table->string('file');
             $table->unique(['tenant_id', 'name']);
             $table->timestamps();
             $table->softDeletes();

@@ -17,7 +17,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
     return (
         <GuestLayout>
-            <Head title="Esqueceu a Senha" />
+            <Head title="Esqueceu a senha" />
 
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
                 Esqueceu a senha? Informe o e-mail cadastrado abaixo para receber o link de recuperação da sua conta.

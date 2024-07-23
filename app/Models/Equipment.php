@@ -5,48 +5,47 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\ServiceOrder;
-use App\Models\User;
 
 class Equipment extends Model
 {
     use HasFactory, SoftDeletes;
 
-    public $table = "equipments";
+    public $table = 'equipments';
+
     protected $guarded = [];
 
-    function tenant()
+    public function tenant()
     {
-        return $this->belongsTo(User::class, "tenant_id");
+        return $this->belongsTo(User::class, 'tenant_id');
     }
 
-    function service_orders()
+    public function service_orders()
     {
-        return $this->belongsToMany(ServiceOrder::class, "service_order_drone", "drone_id");
+        return $this->belongsToMany(ServiceOrder::class, 'service_order_drone', 'drone_id');
     }
 
     // Scopes
 
-    function scopeSearch($query, $value)
+    public function scopeSearch($query, $value)
     {
         return $query->when((bool) $value, function ($query) use ($value) {
             $query
                 ->where('public_id', $value)
-                ->orWhere('manufacturer', 'LIKE', '%' . $value . '%')
-                ->orWhere('model', 'LIKE', '%' . $value . '%')
-                ->orWhere('record_number', 'LIKE', '%' . $value . '%')
-                ->orWhere('serial_number', 'LIKE', '%' . $value . '%')
+                ->orWhere('manufacturer', 'LIKE', '%'.$value.'%')
+                ->orWhere('model', 'LIKE', '%'.$value.'%')
+                ->orWhere('record_number', 'LIKE', '%'.$value.'%')
+                ->orWhere('serial_number', 'LIKE', '%'.$value.'%')
                 ->orWhere('weight', $value);
         });
     }
 
-    function scopeFilter($query, string $filter)
+    public function scopeFilter($query, string $filter)
     {
-        if ($filter === "all") {
+        if ($filter === 'all') {
             return $query->withTrashed();
-        } else if ($filter === "active") {
-            return $query->where("deleted_at", null);
-        } else if ($filter === "deleted") {
+        } elseif ($filter === 'active') {
+            return $query->where('deleted_at', null);
+        } elseif ($filter === 'deleted') {
             return $query->onlyTrashed();
         }
     }

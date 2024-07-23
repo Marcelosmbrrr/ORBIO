@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers\Pilot;
 
+use App\Events\UserCreated;
+use App\Events\UserEmailUpdated;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
-use App\Models\User;
 use App\Http\Requests\Pilots\CreatePilotRequest;
 use App\Http\Requests\Pilots\EditPilotRequest;
 use App\Http\Resources\Users\UserResource;
-use App\Events\UserCreated;
-use App\Events\UserEmailUpdated;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class PilotController extends Controller
 {
-    function __construct(User $userModel)
+    public function __construct(User $userModel)
     {
         $this->model = $userModel;
     }
@@ -26,25 +25,25 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:read');
 
-        $order_by = request("order_by", "id");
-        $limit = request("limit", "10");
-        $page = request("page", "1");
-        $search = request("search", "");
-        $group = request("group", "all");
+        $order_by = request('order_by', 'id');
+        $limit = request('limit', '10');
+        $page = request('page', '1');
+        $search = request('search', '');
+        $group = request('group', 'all');
 
         $data = $this->model
             ->withTrashed()
             ->where('tenant_id', session('tenant_id'))
-            ->where("role", "piloto")
+            ->where('role', 'piloto')
             ->filter($group) // scope
             ->search($search) // scope
             ->orderBy($order_by)
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'pilots', (int) $page);
 
-        return Inertia::render("Authenticated/Pilots/Index", [
-            "data" => new UserResource($data),
-            "queryParams" => request()->query() ?: null,
-            "success" => session('success'),
+        return Inertia::render('Authenticated/Pilots/Index', [
+            'data' => new UserResource($data),
+            'queryParams' => request()->query() ?: null,
+            'success' => session('success'),
         ]);
     }
 
@@ -52,7 +51,7 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        return Inertia::render("Authenticated/Pilots/CreatePilot");
+        return Inertia::render('Authenticated/Pilots/CreatePilot');
     }
 
     public function store(CreatePilotRequest $request)
@@ -61,8 +60,8 @@ class PilotController extends Controller
 
         $pilot = $this->model->create([
             ...$request->validated(),
-            "role" => "piloto",
-            "tenant_id" => session("tenant_id"),
+            'role' => 'piloto',
+            'tenant_id' => session('tenant_id'),
             'public_id' => Str::uuid(),
         ]);
 
@@ -80,19 +79,19 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $pilot = $this->model->withTrashed()->where("public_id", $id)->first();
+        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
 
-        return Inertia::render("Authenticated/Pilots/ShowPilot", [
-            "user" => [
-                "id" => $pilot->public_id,
-                "name" => $pilot->name,
-                "role" => $pilot->role,
-                "email" => $pilot->email,
-                "status" => $pilot->trashed() ? "Deletado" : ($pilot->status ? "Ativo" : "Inativo"),
-                "created_at" => $pilot->created_at->format('d/m/Y'),
-                "updated_at" => $pilot->updated_at->format('d/m/Y'),
-                "deleted_at" => $pilot->deleted_at
-            ]
+        return Inertia::render('Authenticated/Pilots/ShowPilot', [
+            'user' => [
+                'id' => $pilot->public_id,
+                'name' => $pilot->name,
+                'role' => $pilot->role,
+                'email' => $pilot->email,
+                'status' => $pilot->trashed() ? 'Deletado' : ($pilot->status ? 'Ativo' : 'Inativo'),
+                'created_at' => $pilot->created_at->format('d/m/Y'),
+                'updated_at' => $pilot->updated_at->format('d/m/Y'),
+                'deleted_at' => $pilot->deleted_at,
+            ],
         ]);
     }
 
@@ -100,15 +99,15 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $pilot = $this->model->withTrashed()->where("public_id", $id)->first();
+        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
 
-        return Inertia::render("Authenticated/Pilots/EditPilot", [
-            "user" => [
-                "id" => $pilot->public_id,
-                "name" => $pilot->name,
-                "email" => $pilot->email,
-                "role" => $pilot->role
-            ]
+        return Inertia::render('Authenticated/Pilots/EditPilot', [
+            'user' => [
+                'id' => $pilot->public_id,
+                'name' => $pilot->name,
+                'email' => $pilot->email,
+                'role' => $pilot->role,
+            ],
         ]);
     }
 
@@ -116,7 +115,7 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $pilot = $this->model->withTrashed()->where("public_id", $id)->first();
+        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
         $pilot->update($request->validated());
 
         $email_changed = $pilot->email !== $request->input('email');
@@ -126,31 +125,31 @@ class PilotController extends Controller
         if ($email_changed) {
 
             $pilot->update([
-                'email_verified_at' => null
+                'email_verified_at' => null,
             ]);
 
             event(new UserEmailUpdated($pilot));
-            
+
         }
 
         return redirect()->route('pilots.index', ['search' => $pilot->public_id])
-            ->with('success', "A edição do piloto foi bem sucedida");
+            ->with('success', 'A edição do piloto foi bem sucedida');
     }
 
     public function destroy()
     {
         Gate::authorize('pilots-clients:write');
 
-        $ids = explode(",", request("ids"));
+        $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $users = $this->model->where("public_id", $ids)->get();
+            $users = $this->model->where('public_id', $ids)->get();
             foreach ($users as $pilot) {
                 $pilot->delete();
             }
         });
 
         return to_route('pilots.index')
-            ->with('success', "Os pilotos selecionados foram deletados");
+            ->with('success', 'Os pilotos selecionados foram deletados');
     }
 }

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id')->unique();
-            $table->foreignId("service_order_id")->constrained('service_orders')->onDelete('cascade');
+            $table->foreignId('service_order_id')->constrained('service_orders')->onDelete('cascade');
             $table->string('name')->unique();
             $table->string('file');
             $table->unique(['service_order_id', 'name']);

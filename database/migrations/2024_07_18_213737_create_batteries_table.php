@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('serial_number');
             $table->datetime('last_charge');
             $table->string('observation')->nullable(true);
-            $table->string("image")->nullable(true);
+            $table->string('image')->nullable(true);
             $table->unique(['tenant_id', 'name']);
             $table->timestamps();
             $table->softDeletes();

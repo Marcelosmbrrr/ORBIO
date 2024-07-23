@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->string("anac_license")->nullable(true); 
-            $table->string("cpf")->nullable(true)->unique(); 
-            $table->string("cnpj")->nullable(true)->unique(); 
-            $table->string("company_name")->nullable(true); 
-            $table->string("trading_name")->nullable(true); 
+            $table->string('anac_license')->nullable(true);
+            $table->string('cpf')->nullable(true)->unique();
+            $table->string('cnpj')->nullable(true)->unique();
+            $table->string('company_name')->nullable(true);
+            $table->string('trading_name')->nullable(true);
             $table->timestamps();
         });
     }

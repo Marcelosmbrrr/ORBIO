@@ -13,27 +13,26 @@ class EditPilotRequest extends FormRequest
 
     public function rules(): array
     {
-        $public_id = $this->route("pilot");
+        $public_id = $this->route('pilot');
 
         $rules = [
-            "name" => ["required"],
-            "email" => ["required", "email", "unique:users,email," . $public_id . ",public_id"]
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users,email,'.$public_id.',public_id'],
         ];
 
         if ($this->filled('password')) {
-            $rules['password'] = ["sometimes"];
+            $rules['password'] = ['sometimes'];
         }
 
         return $rules;
     }
 
-
     public function messages()
     {
         return [
-            "name.required" => "Informe o nome",
-            "email.email" => "Email inválido",
-            "email.unique" => "E-mail já existe"
+            'name.required' => 'Informe o nome',
+            'email.email' => 'Email inválido',
+            'email.unique' => 'E-mail já existe',
         ];
     }
 }

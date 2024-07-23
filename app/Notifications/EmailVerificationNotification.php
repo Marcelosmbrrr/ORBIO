@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
@@ -32,7 +31,7 @@ class EmailVerificationNotification extends Notification
             ->subject('Verificação do e-mail')
             ->line('Por favor, clique no botão abaixo para verificar seu endereço de email.')
             ->action('Verificar Endereço de Email', $verificationUrl)
-            ->line('Utilize esta senha para acessar a conta: ' . $this->password)
+            ->line('Utilize esta senha para acessar a conta: '.$this->password)
             ->line('Se você não criou uma conta, nenhuma ação adicional é necessária.');
     }
 

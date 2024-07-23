@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->string("state")->nullable(true);
-            $table->string("city")->nullable(true);
-            $table->string("neighborhood")->nullable(true);
-            $table->string("street_name")->nullable(true);
-            $table->string("number")->nullable(true);
-            $table->string("zip_code")->nullable(true);
+            $table->string('state')->nullable(true);
+            $table->string('city')->nullable(true);
+            $table->string('neighborhood')->nullable(true);
+            $table->string('street_name')->nullable(true);
+            $table->string('number')->nullable(true);
+            $table->string('zip_code')->nullable(true);
             $table->timestamps();
         });
     }

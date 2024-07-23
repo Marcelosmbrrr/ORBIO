@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
 
@@ -26,8 +26,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)
-     ->name('verification.verify')
-     ->middleware(['signed', 'throttle:6,1']);
+    ->name('verification.verify')
+    ->middleware(['signed', 'throttle:6,1']);
 
 Route::middleware('auth')->group(function () {
     Route::post('logout', [SessionController::class, 'destroy'])

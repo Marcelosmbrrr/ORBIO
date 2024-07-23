@@ -18,7 +18,7 @@ class EditDocumentalDataRequest extends FormRequest
             'cnpj' => 'nullable|string|regex:^\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2}$^',
             'company_name' => 'nullable|string|max:255',
             'trading_name' => 'nullable|string|max:255',
-            'anac_license' => 'nullable|string|^\d{6}$^'
+            'anac_license' => 'nullable|string|^\d{6}$^',
         ];
     }
 
@@ -29,7 +29,7 @@ class EditDocumentalDataRequest extends FormRequest
             'cnpj.required' => 'Informe o cnpj',
             'cpf.regex' => 'Formato inválido',
             'cnpj.regex' => 'Formato inválido',
-            'anac_license.regex' => 'Formato inválido'
+            'anac_license.regex' => 'Formato inválido',
         ];
     }
 }

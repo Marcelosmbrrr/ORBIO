@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ServiceOrder;
 
 class Incident extends Model
 {
@@ -15,12 +14,12 @@ class Incident extends Model
     protected function casts(): array
     {
         return [
-            'date' => 'datetime'
+            'date' => 'datetime',
         ];
     }
 
-    function service_order()
+    public function service_order()
     {
-        return $this->belongsTo(ServiceOrder::class, "service_order_id");
+        return $this->belongsTo(ServiceOrder::class, 'service_order_id');
     }
 }

@@ -15,30 +15,30 @@ class CreateDroneRequest extends FormRequest
     public function rules(): array
     {
         $uniqueRule = Rule::unique('drones')->where(function ($query) {
-            return $query->where('tenant_id', session("tenant_id"));
+            return $query->where('tenant_id', session('tenant_id'));
         });
 
         return [
-            "name" => ["required", $uniqueRule],
-            "manufacturer" => ["required"],
-            "model" => ["required"],
-            "record_number" => ["required"],
-            "serial_number" => ["required"],
-            "weight" => ["required"],
-            "image" => ["nullable", "image", "dimensions:min_height=300, max_height=600, max_width=600"]
+            'name' => ['required', $uniqueRule],
+            'manufacturer' => ['required'],
+            'model' => ['required'],
+            'record_number' => ['required'],
+            'serial_number' => ['required'],
+            'weight' => ['required'],
+            'image' => ['nullable', 'image', 'dimensions:min_height=300, max_height=600, max_width=600'],
         ];
     }
 
     public function messages()
     {
         return [
-            "name.required" => "informe o nome do drone",
-            "name.unique" => "Já existe um drone com esse nome",
-            "model.required" => "informe o modelo",
-            "manufacturer.required" => "informe o fabricante",
-            "record_number.required" => "informe o número de registro",
-            "serial_number.required" => "informe o número serial",
-            "weight.required" => "informe o peso"
+            'name.required' => 'informe o nome do drone',
+            'name.unique' => 'Já existe um drone com esse nome',
+            'model.required' => 'informe o modelo',
+            'manufacturer.required' => 'informe o fabricante',
+            'record_number.required' => 'informe o número de registro',
+            'serial_number.required' => 'informe o número serial',
+            'weight.required' => 'informe o peso',
         ];
     }
 }

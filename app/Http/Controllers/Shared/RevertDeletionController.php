@@ -9,10 +9,10 @@ class RevertDeletionController extends Controller
 {
     public function __invoke(string $table)
     {
-        $ids = explode(",", request("ids"));
+        $ids = explode(',', request('ids'));
 
         DB::table($table)->whereIn('public_id', $ids)->update([
-            'deleted_at' => null
+            'deleted_at' => null,
         ]);
 
         return redirect()->back()->with('success', 'Os registros selecionados foram recuperados');

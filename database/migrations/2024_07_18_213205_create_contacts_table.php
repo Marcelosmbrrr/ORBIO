@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->integer('ddd')->nullable(true);
-            $table->string("number")->nullable(true);
+            $table->string('number')->nullable(true);
             $table->timestamps();
         });
     }

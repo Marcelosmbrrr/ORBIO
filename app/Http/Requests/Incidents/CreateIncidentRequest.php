@@ -14,18 +14,18 @@ class CreateIncidentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "type" => ["required"],
-            "description" => ["required"],
-            "date" => ["required"]
+            'type' => ['required'],
+            'description' => ['required'],
+            'date' => ['required'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            "type.required" => "O campo tipo é obrigatório.",
-            "date.required" => "O campo data é obrigatório.",
-            "description.required" => "O campo descrição é obrigatório."
+            'type.required' => 'O campo tipo é obrigatório.',
+            'date.required' => 'O campo data é obrigatório.',
+            'description.required' => 'O campo descrição é obrigatório.',
         ];
     }
 }

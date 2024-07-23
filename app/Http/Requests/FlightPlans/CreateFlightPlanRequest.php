@@ -15,14 +15,14 @@ class CreateFlightPlanRequest extends FormRequest
     public function rules(): array
     {
         $uniqueRule = Rule::unique('flight_plans')->where(function ($query) {
-            return $query->where('tenant_id', session("tenant_id"));
+            return $query->where('tenant_id', session('tenant_id'));
         });
 
         return [
-            "name" => ["required", $uniqueRule],
-            "single_file" => ["required", "file", "mimes:txt"],
-            "multi_file" => ["required", "array"],
-            'multi_file.*' => ["file", "mimes:txt"]
+            'name' => ['required', $uniqueRule],
+            'single_file' => ['required', 'file', 'mimes:txt'],
+            'multi_file' => ['required', 'array'],
+            'multi_file.*' => ['file', 'mimes:txt'],
         ];
     }
 

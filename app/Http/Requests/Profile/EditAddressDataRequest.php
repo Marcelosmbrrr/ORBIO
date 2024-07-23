@@ -14,24 +14,24 @@ class EditAddressDataRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "zip_code" => ["required"],
-            "state" => ["required"],
-            "city" => ["required"],
-            "neighborhood" => ["required"],
-            "street_name" => ["required"],
-            "number" => ["required"]
+            'zip_code' => ['required'],
+            'state' => ['required'],
+            'city' => ['required'],
+            'neighborhood' => ['required'],
+            'street_name' => ['required'],
+            'number' => ['required'],
         ];
     }
 
     public function messages()
     {
         return [
-            "zip_code.required" => "Informe o cep",
-            "state.required" => "Informe a uf",
-            "city.required" => "Informe a cidade",
-            "neighborhood.required" => "Informe o bairro",
-            "street_name" => "Informe o logradouro",
-            "number.required" => "Informe o número"
+            'zip_code.required' => 'Informe o cep',
+            'state.required' => 'Informe a uf',
+            'city.required' => 'Informe a cidade',
+            'neighborhood.required' => 'Informe o bairro',
+            'street_name' => 'Informe o logradouro',
+            'number.required' => 'Informe o número',
         ];
     }
 }
