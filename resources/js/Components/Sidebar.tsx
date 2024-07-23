@@ -21,8 +21,8 @@ interface SidebarItemProps {
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon: Icon, label, children, method }) => {
-    const [isOpen, setIsOpen] = useState(false);
 
+    const [isOpen, setIsOpen] = useState(false);
     const toggleDropdown = () => setIsOpen(!isOpen);
 
     return (
