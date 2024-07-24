@@ -37,7 +37,7 @@ class ManagerController extends Controller
             ->filter($group) // scope
             ->search($search) // scope
             ->orderBy($order_by)
-            ->paginate((int) $limit, ['*'], 'page', (int) $page);
+            ->paginate((int) $limit, ['*'], 'managers', (int) $page);
 
         return Inertia::render('Authenticated/Managers/Index', [
             'data' => new UserResource($data),
