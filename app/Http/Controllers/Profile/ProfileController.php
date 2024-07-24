@@ -11,11 +11,11 @@ use App\Http\Requests\Profile\EditContactDataRequest;
 use App\Http\Requests\Profile\EditDocumentalDataRequest;
 use App\Http\Resources\Profile\ProfileResource;
 use App\Models\User;
+use App\Notifications\EmailVerificationAfterUpdateNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
-use App\Notifications\EmailVerificationAfterUpdateNotification;
 
 class ProfileController extends Controller
 {
@@ -48,7 +48,7 @@ class ProfileController extends Controller
                 'email_verified_at' => null,
             ]);
 
-            $user->notify(new EmailVerificationAfterUpdateNotification());
+            $user->notify(new EmailVerificationAfterUpdateNotification);
 
             Auth::logout();
 
@@ -66,7 +66,7 @@ class ProfileController extends Controller
     public function updateDocument(EditDocumentalDataRequest $request)
     {
         $data = array_filter($request->all(), function ($value) {
-            return !is_null($value);
+            return ! is_null($value);
         });
 
         $user = $this->model->find(Auth::user()->id);
@@ -100,7 +100,7 @@ class ProfileController extends Controller
 
         $password_match = Hash::check($request->password, $user->password);
 
-        if (!$password_match) {
+        if (! $password_match) {
             throw ValidationException::withMessages(['password' => 'Senha inválida']);
         }
 
@@ -118,7 +118,7 @@ class ProfileController extends Controller
 
         $password_match = Hash::check($request->password, $user->password);
 
-        if (!$password_match) {
+        if (! $password_match) {
             throw ValidationException::withMessages(['password' => 'Senha inválida']);
         }
 

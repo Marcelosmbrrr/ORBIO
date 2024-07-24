@@ -7,12 +7,12 @@ use App\Http\Requests\Pilots\CreatePilotRequest;
 use App\Http\Requests\Pilots\EditPilotRequest;
 use App\Http\Resources\Users\UserResource;
 use App\Models\User;
+use App\Notifications\EmailVerificationAfterUpdateNotification;
+use App\Notifications\EmailVerificationNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use App\Notifications\EmailVerificationNotification;
-use App\Notifications\EmailVerificationAfterUpdateNotification;
 
 class PilotController extends Controller
 {
@@ -128,7 +128,7 @@ class PilotController extends Controller
                 'email_verified_at' => null,
             ]);
 
-            $user->notify(new EmailVerificationAfterUpdateNotification());
+            $user->notify(new EmailVerificationAfterUpdateNotification);
 
         }
 

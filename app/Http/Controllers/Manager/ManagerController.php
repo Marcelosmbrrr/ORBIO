@@ -7,12 +7,12 @@ use App\Http\Requests\Manager\CreateManagerRequest;
 use App\Http\Requests\Manager\EditManagerRequest;
 use App\Http\Resources\Users\UserResource;
 use App\Models\User;
+use App\Notifications\EmailVerificationAfterUpdateNotification;
+use App\Notifications\EmailVerificationNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use App\Notifications\EmailVerificationNotification;
-use App\Notifications\EmailVerificationAfterUpdateNotification;
 
 class ManagerController extends Controller
 {
@@ -24,6 +24,8 @@ class ManagerController extends Controller
     public function index()
     {
         Gate::authorize('managers:read');
+
+        dd(! true);
 
         $order_by = request('order_by', 'id');
         $limit = request('limit', '10');
@@ -124,7 +126,7 @@ class ManagerController extends Controller
                 'email_verified_at' => null,
             ]);
 
-            $user->notify(new EmailVerificationAfterUpdateNotification());
+            $user->notify(new EmailVerificationAfterUpdateNotification);
 
         }
 
