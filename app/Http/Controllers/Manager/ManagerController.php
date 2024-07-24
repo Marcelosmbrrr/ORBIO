@@ -25,8 +25,6 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:read');
 
-        dd(! true);
-
         $order_by = request('order_by', 'id');
         $limit = request('limit', '10');
         $page = request('page', '1');
