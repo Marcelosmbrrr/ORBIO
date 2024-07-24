@@ -25,7 +25,7 @@ export function BatteryList() {
                         <th scope="col" className="text-left px-6 py-3">
                             Última Carga
                         </th>
-                        <td className="text-right px-6 py-3">
+                        <td scope="col" className="text-right px-6 py-3">
                             Visualizar
                         </td>
                     </tr>

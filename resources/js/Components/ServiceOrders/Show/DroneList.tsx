@@ -28,7 +28,7 @@ export function DroneList() {
                         <th scope="col" className="text-left px-6 py-3">
                             Peso
                         </th>
-                        <td className="text-right px-6 py-3">
+                        <td scope="col" className="text-right px-6 py-3">
                             Visualizar
                         </td>
                     </tr>
