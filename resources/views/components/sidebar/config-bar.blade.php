@@ -1,5 +1,5 @@
 <div>
-    <div id="config-bar" class="h-screen py-3 overflow-y-auto bg-white border-l border-r w-60 dark:bg-gray-900 dark:border-gray-700 hidden">
+    <div id="config-bar" class="w-60 h-screen py-3 overflow-y-auto bg-white border-l border-r dark:bg-gray-900 dark:border-gray-700 hidden">
         <div>
             <div class="flex items-center border-b-2 mb-2 w-full px-3 py-3 transition-colors duration-200 gap-x-2">
                 <svg class="h-5 w-5 mr-2 text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">

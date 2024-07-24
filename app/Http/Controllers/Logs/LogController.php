@@ -75,11 +75,11 @@ class LogController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-
-            $log = $this->logModel->where('public_id', $ids)->first();
-            $log->delete();
-
-            Storage::disk('public')->delete($log->file);
+            $logs = $this->model->whereIn('public_id', $ids)->get();
+            foreach ($logs as $log) {
+                $log->delete();
+                Storage::disk('public')->delete($log->file);
+            }
         });
 
         return redirect()->route('service-orders.show', ['service_order' => $service_order_id])

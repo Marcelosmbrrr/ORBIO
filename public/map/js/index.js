@@ -72,11 +72,6 @@ map.on('draw.update', updateArea);
 map.on('click', selectInitialPosition);
 map.on('touchstart', selectInitialPosition);
 
-// ==== ALERTA ==== //
-
-var alert = document.getElementById("alert");
-var alertMessage = document.getElementById("alert-message");
-
 // ============================================================================================= PART 2: DRAWING ROUTE  ============================================================================================= //
 
 function updateArea(e) {
@@ -1614,7 +1609,7 @@ function drawTxtPath(txtPath) {
 function finishFlightPlan() {
 
     if (initialPosition.length === 0) {
-        showAlert("error", 'Nenhuma rota foi definida');
+        alert("Nenhuma rota foi definida");
         return;
     }
 
@@ -1879,75 +1874,76 @@ function createMultiFile(singlePathData) {
     return multiPathData;
 }
 
+let isSaving = false; // Flag para controlar o estado de salvamento
+
 function saveFlightPlan() {
-
-    // Verify if name was filled
-
-    const flight_plan_name = document.getElementById("name-confirmation").value;
-    if (flight_plan_name === "") {
-        showAlert("error", "Informe o nome do plano de voo.");
+    if (isSaving) {
+        console.log("O salvamento já está em andamento.");
         return;
     }
 
-    // Disable button
+    console.log("Iniciando saveFlightPlan...");
+    isSaving = true; // Marcar início do processo
 
+    // Verificar se o nome foi preenchido
+    const flight_plan_name = document.getElementById("name-confirmation").value;
+    if (flight_plan_name === "") {
+        alert("Informe o nome do plano de voo.");
+        isSaving = false; // Reverter flag se o processo não continuar
+        return;
+    }
+
+    // Desativar botão
     btnSave.disabled = true;
     btnSave.innerText = "Carregando...";
 
-    // Generate route files
-
+    // Gerar arquivos de rota
     const singlePathData = createSingleFile();
     const multiPathData = createMultiFile(singlePathData);
 
-    // Create Form Data
-
+    // Criar Form Data
     let formData = new FormData();
-
     formData.append("name", flight_plan_name);
     formData.append("single_file", new File([singlePathData.blob], singlePathData.filename, { type: "text/plain" }));
 
-    multiPathData.map((fileData) => {
+    multiPathData.forEach((fileData) => {
         formData.append("multi_file[]", new File([fileData.blob], fileData.filename, { type: "text/plain" }));
         formData.append("coordinates[]", fileData.coordinates[1] + "," + fileData.coordinates[0]);
     });
 
-    // Create Request Url (patch or post)
-
+    // Criar URL de Requisição (patch ou post)
     let fetch_url = window.location.origin + "/flight-plans";
-
     if (window.location.href.split("/").includes("edit")) {
         formData.append('_method', 'PATCH');
         fetch_url += "/" + flight_plan_id;
     }
 
-    // Request
-
-    console.log(window.location.origin)
-
+    // Requisição
     axios.post(fetch_url, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         },
         responseType: 'json'
     }).then((response) => {
-
-        showAlert("success", "Plano de voo criado!");
+        console.log("Plano de voo criado com sucesso:", response.data);
+        document.getElementById('saving-bar').classList.add("hidden");
+        alert("Sucesso! O plano de voo foi criado.");
         clearMap();
-
-        setTimeout(() => {
-            document.getElementById('saving-bar').classList.add("hidden");
-        }, 2000);
-
     }).catch((error) => {
-        console.log(error);
-        showAlert("error", error.response.status === 422 ? "Esse nome já existe." : "Não foi possível salvar o plano.");
+        console.error("Erro ao criar plano de voo:", error);
+        alert(error.response && error.response.status === 422 ? "Esse nome já existe" : "Não foi possível salvar o plano");
+    }).finally(() => {
+        console.log("Finalizando saveFlightPlan...");
+        isSaving = false; // Marcar fim do processo
         btnSave.disabled = false;
-    })
-        .finally(() => {
-            btnSave.disabled = false;
-            btnSave.innerText = "Salvar";
-        });
+        btnSave.innerText = "Salvar";
+    });
 }
+
+// Certifique-se de que o evento está sendo adicionado apenas uma vez
+document.addEventListener('DOMContentLoaded', () => {
+    btnSave.addEventListener("click", saveFlightPlan);
+});
 
 // ================================================================================================== OTHER ROUTINES: CLEAN MAP, PRINT SCREEN, ETC ================================================================================================== //
 
@@ -2010,24 +2006,4 @@ function cleanFields() {
 
 function cleanPolygon() {
     draw.deleteAll();
-}
-
-function showAlert(type, message) {
-
-    if (type === "error") {
-        alert.classList.remove("bg-red-500", "bg-green-500");
-        alert.classList.add("bg-red-500");
-    } else if (type === "success") {
-        alert.classList.remove("bg-red-500", "bg-green-500");
-        alert.classList.add("bg-green-500");
-    }
-
-    alertMessage.innerHTML = "";
-    alertMessage.innerHTML = message;
-
-    alert.classList.remove("show-alert");
-
-    setTimeout(() => {
-        alert.classList.add("show-alert");
-    }, "500");
 }

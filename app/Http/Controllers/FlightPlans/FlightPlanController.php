@@ -57,7 +57,7 @@ class FlightPlanController extends Controller
     {
         Gate::authorize('flight-plans:write');
 
-        $flight_plan = DB::transaction(function () use ($request) {
+        DB::transaction(function () use ($request) {
 
             $public_id = Str::uuid();
             $file_path = session('tenant_id').'/flight-plans/'.$public_id;
@@ -84,12 +84,11 @@ class FlightPlanController extends Controller
                 $multiFilePath = $file_path.'/multi/'.($index).'_'.time().'.txt';
                 Storage::disk('public')->put($multiFilePath, file_get_contents($file->getRealPath()));
             }
-
-            return $flight_plan;
         });
 
-        return to_route('flight-plans.index')
-            ->with('success', 'A criação do plano de voo foi bem sucedida');
+        return response([
+            'message' => 'A criação do plano de voo foi bem sucedida',
+        ], 201);
     }
 
     public function show(string $id)
@@ -143,7 +142,7 @@ class FlightPlanController extends Controller
     {
         Gate::authorize('flight-plans:write');
 
-        $flight_plan = DB::transaction(function () use ($request, $id) {
+        DB::transaction(function () use ($request, $id) {
 
             $flight_plan = $this->model->withTrashed()->where('public_id', $id)->first();
 
@@ -167,8 +166,6 @@ class FlightPlanController extends Controller
                 $multi_file_path = $flight_plan->file.'/multi/'.$index + 1 .'_'.now().'.txt';
                 Storage::disk('public')->put($multi_file_path, $file);
             }
-
-            return $flight_plan;
         });
 
         return response([
@@ -183,7 +180,7 @@ class FlightPlanController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $flightplans = $this->model->where('public_id', $ids)->get();
+            $flightplans = $this->model->whereIn('public_id', $ids)->get();
             foreach ($flightplans as $flightplan) {
                 $flightplan->delete();
             }

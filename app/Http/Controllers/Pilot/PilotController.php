@@ -143,7 +143,7 @@ class PilotController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $users = $this->model->where('public_id', $ids)->get();
+            $users = $this->model->whereIn('public_id', $ids)->get();
             foreach ($users as $user) {
                 $user->delete();
             }

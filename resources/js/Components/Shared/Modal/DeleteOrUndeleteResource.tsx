@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useForm } from '@inertiajs/react';
-import { useSnackbar } from 'notistack';
 import { Dialog, Transition } from '@headlessui/react'
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
 
@@ -15,31 +14,24 @@ export function DeleteOrUndeleteResource(props: Props) {
 
     const [open, setOpen] = React.useState(false);
     const form = useForm();
-    const { enqueueSnackbar } = useSnackbar();
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
 
         if (props.action === "delete") {
-
             form.delete(props.request_url, {
+                preserveState: false,
                 onSuccess: (e) => {
-                    enqueueSnackbar('Os registros selecionados foram excluídos', { variant: "success" });
                     setOpen(false);
-                    props.reload({ group: "all" });
                 }
             });
-
         } else {
-
             form.patch(props.request_url, {
+                preserveState: false,
                 onSuccess: () => {
-                    enqueueSnackbar("Os registros selecionados foram recuperados", { variant: "success" });
                     setOpen(false);
-                    props.reload({ group: "all" });
                 }
             });
-
         }
     };
 

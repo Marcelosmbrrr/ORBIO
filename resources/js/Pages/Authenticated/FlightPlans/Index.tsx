@@ -162,8 +162,8 @@ const ActionButtons = ({ canCreate, canEdit, canShow, canDeleteOrUndelete, selec
         <DeleteOrUndeleteResource
             can_open={canDeleteOrUndelete}
             reload={reload}
-            action={currentParams.group === "deleted" ? "undelete" : "delete"}
-            request_url={currentParams.group === "deleted"
+            action={currentParams.group === "deleted" || selections.every((sel: FlightPlanSelected) => sel.is_deleted) ? "undelete" : "delete"}
+            request_url={currentParams.group === "deleted" || selections.every((sel: FlightPlanSelected) => sel.is_deleted)
                 ? `/actions/undelete/flight_plans?ids=${selections.map((selection: any) => selection.id).join(',')}`
                 : `/flight-plans/delete-many?ids=${selections.map((selection: any) => selection.id).join(',')}`
             }

@@ -63,6 +63,8 @@ export default function Pilots() {
         });
     };
 
+    console.log(selections)
+
     const isSelected = (recordId: string) => selections.some(selection => selection.id === recordId);
     const canOpenDeleteOrUndelete = selections.length > 0 && auth.user.authorization.users.write && selections.every(sel => sel.is_deleted === selections[0].is_deleted);
 
@@ -151,8 +153,8 @@ const ActionButtons = ({ canCreate, canEdit, canShow, canDeleteOrUndelete, selec
         <DeleteOrUndeleteResource
             can_open={canDeleteOrUndelete}
             reload={reload}
-            action={currentParams.group === "deleted" ? "undelete" : "delete"}
-            request_url={currentParams.group === "deleted"
+            action={currentParams.group === "deleted" || selections.every((sel: PilotSelected) => sel.is_deleted) ? "undelete" : "delete"}
+            request_url={currentParams.group === "deleted" || selections.every((sel: PilotSelected) => sel.is_deleted)
                 ? `/actions/undelete/users?ids=${selections.map((selection: any) => selection.id).join(',')}`
                 : `/pilots/delete-many?ids=${selections.map((selection: any) => selection.id).join(',')}`
             }

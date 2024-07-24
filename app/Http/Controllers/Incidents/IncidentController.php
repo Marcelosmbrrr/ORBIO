@@ -82,7 +82,7 @@ class IncidentController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $log = $this->incidentModel->where('public_id', $ids)->first();
+            $log = $this->incidentModel->whereIn('public_id', $ids)->first();
             $log->delete();
         });
 

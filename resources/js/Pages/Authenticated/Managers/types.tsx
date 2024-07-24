@@ -1,4 +1,4 @@
-export interface TenantRecord {
+export interface ManagerRecord {
     id: string;
     name: string;
     role: string;
@@ -13,7 +13,7 @@ export interface TenantRecord {
     deleted_at: string | null;
 }
 
-export interface TenantSelected {
+export interface ManagerSelected {
     id: string;
     is_deleted: boolean;
 }

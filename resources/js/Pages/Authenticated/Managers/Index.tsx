@@ -10,7 +10,7 @@ import { LimitSelector } from '@/Components/Shared/Pagination/LimitSelector';
 import { OrderSelector } from '@/Components/Shared/Pagination/OrderSelector';
 import { Alert } from '@/Components/Alert';
 // Types
-import { Meta, TenantRecord, TenantSelected } from './types';
+import { Meta, ManagerRecord, ManagerSelected } from './types';
 
 type QueryParams = { page: number, search: string, order_by: string, limit: string, group: "all" | "verified" | "unverified" | "deleted" }
 
@@ -26,11 +26,11 @@ export default function Managers() {
 
     const { auth, data, queryParams = null, success }: any = usePage().props;
 
-    const tenants: TenantRecord[] = data.data;
+    const tenants: ManagerRecord[] = data.data;
     const meta: Meta = data.meta;
     const currentParams: QueryParams = { ...defaultParams, ...queryParams };
 
-    const [selections, setSelections] = React.useState<TenantSelected[]>([]);
+    const [selections, setSelections] = React.useState<ManagerSelected[]>([]);
     const [search, setSearch] = React.useState<string>("");
 
     const handleNavigation = React.useCallback((params: Partial<QueryParams>) => {
@@ -52,7 +52,7 @@ export default function Managers() {
             } else {
                 const tenant = tenants.find(tenant => tenant.id === recordId);
                 if (tenant) {
-                    const newSelection: TenantSelected = {
+                    const newSelection: ManagerSelected = {
                         id: tenant.id,
                         is_deleted: Boolean(tenant.deleted_at)
                     };
@@ -88,7 +88,7 @@ export default function Managers() {
                     </div>
                     <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
                     <FilterGroup currentGroup={currentParams.group} onChange={(group: "all" | "verified" | "unverified" | "deleted") => handleNavigation({ group, page: 1 })} />
-                    <TenantTable tenants={tenants} isSelected={isSelected} toggleSelection={toggleSelection} />
+                    <ManagerTable tenants={tenants} isSelected={isSelected} toggleSelection={toggleSelection} />
                     <PaginationInfo meta={meta} />
                     <Paginator current_page={meta.current_page} pages={meta.last_page} changePage={(page: number) => handleNavigation({ page })} />
                 </div>
@@ -143,9 +143,9 @@ const ActionButtons = ({ canCreate, canEdit, canShow, canDeleteOrUndelete, selec
         <DeleteOrUndeleteResource
             can_open={canDeleteOrUndelete}
             reload={reload}
-            action={currentParams.group === "deleted" ? "undelete" : "delete"}
-            request_url={currentParams.group === "deleted"
-                ? `/actions/undelete/tenants?ids=${selections.map((selection: any) => selection.id).join(',')}`
+            action={currentParams.group === "deleted" || selections.every((sel: ManagerSelected) => sel.is_deleted) ? "undelete" : "delete"}
+            request_url={currentParams.group === "deleted" || selections.every((sel: ManagerSelected) => sel.is_deleted)
+                ? `/actions/undelete/users?ids=${selections.map((selection: any) => selection.id).join(',')}`
                 : `/managers/delete-many?ids=${selections.map((selection: any) => selection.id).join(',')}`
             }
         />
@@ -187,7 +187,7 @@ const FilterGroup = ({ currentGroup, onChange }: { currentGroup: "all" | "verifi
     );
 };
 
-const TenantTable = ({ tenants, isSelected, toggleSelection }: any) => (
+const ManagerTable = ({ tenants, isSelected, toggleSelection }: any) => (
     <div className="mt-2 overflow-x-auto sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-800 dark:text-white uppercase bg-gray-100 dark:bg-gray-700">
@@ -203,7 +203,7 @@ const TenantTable = ({ tenants, isSelected, toggleSelection }: any) => (
                 </tr>
             </thead>
             <tbody>
-                {tenants.length > 0 ? tenants.map((tenant: TenantRecord) => (
+                {tenants.length > 0 ? tenants.map((tenant: ManagerRecord) => (
                     <tr key={tenant.id} className="bg-white dark:text-white border-b dark:bg-gray-900 dark:border-gray-700 hover:bg-gray-50">
                         <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                             <div className="flex items-center">

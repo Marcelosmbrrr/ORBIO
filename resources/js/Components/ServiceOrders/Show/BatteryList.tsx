@@ -25,7 +25,7 @@ export function BatteryList() {
                         <th scope="col" className="text-left px-6 py-3">
                             Última Carga
                         </th>
-                        <td className="text-left px-6 py-4">
+                        <td className="text-right px-6 py-3">
                             Visualizar
                         </td>
                     </tr>
@@ -48,7 +48,7 @@ export function BatteryList() {
                             <td className="text-left px-6 py-4">
                                 {battery.last_charge}
                             </td>
-                            <td className="text-left px-6 py-4">
+                            <td className="flex justify-end space-x-2 px-6 py-4">
                                 <Link href={"/batteries/" + battery.id}>
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="flex-shrink-0 w-5 h-5 text-green-600 transition duration-75">
                                         <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
