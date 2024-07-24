@@ -14,9 +14,9 @@ class VerifyEmailController extends Controller
      */
     public function __invoke(Request $request, string $id): RedirectResponse
     {
-        /*if (!$request->hasValidSignature()) {
+        if (!$request->hasValidSignature()) {
             return redirect()->route('login')->with('error', 'Link de confirmação inválido');
-        }*/
+        }
 
         $user = User::where('public_id', $id)->first();
 

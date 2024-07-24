@@ -27,7 +27,7 @@ Route::middleware('guest')->group(function () {
 
 Route::get('/email/verify/{id}/{hash}', VerifyEmailController::class)
     ->name('verification.verify')
-    ->middleware(['signed', 'throttle:6,1']);
+    ->middleware(['throttle:6,1']);
 
 Route::middleware('auth')->group(function () {
     Route::post('logout', [SessionController::class, 'destroy'])
