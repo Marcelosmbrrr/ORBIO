@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.3-fpm
 
 # set your user name, ex: user=bernardo
 ARG user=carlos
@@ -14,15 +14,15 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y nodejs \
-    npm   
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
-
+    npm  
+    
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets
 
@@ -38,6 +38,6 @@ RUN mkdir -p /home/$user/.composer && \
 WORKDIR /var/www
 
 # Copy custom configurations PHP
-COPY docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
+COPY docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
 
 USER $user

@@ -21,18 +21,23 @@ interface SidebarItemProps {
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ href, icon: Icon, label, children, method }) => {
-
     const [isOpen, setIsOpen] = useState(false);
     const toggleDropdown = () => setIsOpen(!isOpen);
 
     return (
         <li className="group relative">
             {href ? (
-                <Link href={href} {...(method && { method })} className="flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer group">
-                    <div className="p-1 rounded">
-                        <Icon className="flex-shrink-0 w-5 h-5 text-white transition duration-75" />
+                <Link
+                    href={href}
+                    {...(method && { method })}
+                    {...(method === 'post' && { as: 'button', type: 'button' })}
+                    className="w-full flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer group"
+                >
+                    <div className="flex p-1 rounded">
+                        <Icon className="w-5 h-5 text-white transition duration-75" />
+                        <span className="ms-3 whitespace-nowrap">{label}</span>
                     </div>
-                    <span className="flex-1 ms-3 whitespace-nowrap">{label}</span>
+                    
                 </Link>
             ) : (
                 <div onClick={toggleDropdown} className="flex items-center p-3 rounded-lg text-white hover:bg-gray-700 cursor-pointer group">
@@ -80,7 +85,7 @@ export const Sidebar = React.memo(() => {
     return (
         <aside
             id="sidebar"
-            className="fixed top-0 left-0 z-40 w-54 h-screen transition-transform bg-gray-800 dark:bg-gray-900 dark:border-r border-gray-800 hidden lg:block"
+            className="fixed top-0 left-0 z-40 w-56 h-screen transition-transform bg-gray-800 dark:bg-gray-900 dark:border-r border-gray-800 hidden lg:block"
         >
             <div className="h-full px-3 py-4 overflow-y-auto">
                 <ul className="space-y-2 font-medium">

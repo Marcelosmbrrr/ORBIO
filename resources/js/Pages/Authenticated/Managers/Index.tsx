@@ -155,6 +155,7 @@ const ActionButtons = ({ canCreate, canEdit, canShow, canDeleteOrUndelete, selec
 );
 
 const FilterGroup = ({ currentGroup, onChange }: { currentGroup: "all" | "verified" | "unverified" | "deleted", onChange: (group: "all" | "verified" | "unverified" | "deleted") => void }) => {
+    
     const labels: { [key: string]: string } = {
         all: "Todos",
         verified: "Verificados",
