@@ -12,14 +12,14 @@ class FlightPlanResource extends ResourceCollection
     {
         return $this->collection->map(function ($flightplan) {
 
-            $single_file_path = Storage::disk('public')->files($flightplan->file.'/single');
-            $single_file_content = Storage::disk('public')->get($single_file_path[0]);
+            $single_file_path = Storage::disk('s3')->files($flightplan->file.'/single');
+            $single_file_content = Storage::disk('s3')->get($single_file_path[0]);
 
-            $multi_file_paths = Storage::disk('public')->files($flightplan->file.'/multi');
+            $multi_file_paths = Storage::disk('s3')->files($flightplan->file.'/multi');
             $multi_file_contents = [];
 
             foreach ($multi_file_paths as $index => $file_path) {
-                $file_content = Storage::disk('public')->get($file_path);
+                $file_content = Storage::disk('s3')->get($file_path);
                 $filename = explode('.', explode('/', $file_path)[4])[0];
                 $multi_file_contents[$index] = $file_content;
             }

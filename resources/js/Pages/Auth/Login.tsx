@@ -22,7 +22,6 @@ export default function Login() {
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-
         post('/login');
     };
 

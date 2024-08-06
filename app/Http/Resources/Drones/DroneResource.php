@@ -19,7 +19,7 @@ class DroneResource extends ResourceCollection
                 'record_number' => $drone->record_number,
                 'serial_number' => $drone->serial_number,
                 'weight' => $drone->weight,
-                'image' => $drone->image ? Storage::url($drone->image) : '',
+                'image' => $drone->image ? Storage::disk('s3')->temporaryUrl($drone->image, now()->addMinutes(5)) : '',
                 'status' => [
                     'title' => $drone->trashed() ? 'Deletado' : 'Ativo',
                     'style_key' => $drone->trashed() ? 'deleted' : 'active',

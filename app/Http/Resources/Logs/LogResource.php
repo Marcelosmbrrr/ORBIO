@@ -15,7 +15,7 @@ class LogResource extends ResourceCollection
             return [
                 'id' => $log->public_id,
                 'name' => $log->name,
-                'file' => Storage::disk('public')->get($log->file),
+                'file' => Storage::disk('s3')->get($log->file),
                 'created_at' => $log->created_at->format('d/m/Y'),
                 'updated_at' => $log->updated_at->format('d/m/Y'),
             ];

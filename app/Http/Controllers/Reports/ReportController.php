@@ -68,7 +68,7 @@ class ReportController extends Controller
                 'file_path' => $file_path,
             ]);
 
-            Storage::disk('public')->put($file_path, $file_content);
+            Storage::disk('s3')->put($file_path, $file_content);
         });
 
         return to_route('service-orders.show')
@@ -87,7 +87,7 @@ class ReportController extends Controller
 
         $report->delete();
 
-        Storage::disk('public')->delete($report->file_path);
+        Storage::disk('s3')->delete($report->file_path);
 
         return to_route('service-orders.show')
             ->with('success', 'Os relatórios selecionados foram permanentemente deletados');

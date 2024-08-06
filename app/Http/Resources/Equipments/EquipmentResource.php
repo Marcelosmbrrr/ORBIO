@@ -19,7 +19,7 @@ class EquipmentResource extends ResourceCollection
                 'record_number' => $equipment->record_number,
                 'serial_number' => $equipment->serial_number,
                 'weight' => $equipment->weight,
-                'image' => $equipment->image ? Storage::url($equipment->image) : '',
+                'image' => $equipment->image ? Storage::disk('s3')->temporaryUrl($equipment->image, now()->addMinutes(5)) : '',
                 'status' => [
                     'title' => $equipment->trashed() ? 'Deletado' : 'Ativo',
                     'style_key' => $equipment->trashed() ? 'deleted' : 'active',

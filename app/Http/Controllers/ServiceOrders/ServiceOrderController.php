@@ -209,7 +209,7 @@ class ServiceOrderController extends Controller
                 'file' => $file_path,
             ]);
 
-            Storage::disk('public')->putFileAs('', $file_path, $request->report);
+            Storage::disk('s3')->putFileAs('', $file_path, $request->report);
 
             return redirect()->route('service-orders.show', ['service_order' => $service_order->public_id])
                 ->with('success', 'A edição da ordem de serviço foi bem sucedida');

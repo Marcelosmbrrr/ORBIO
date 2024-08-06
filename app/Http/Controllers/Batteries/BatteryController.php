@@ -64,8 +64,8 @@ class BatteryController extends Controller
 
         $image_path = session('tenant_id').'/batteries/'.$battery->public_id.'.jpeg';
 
-        if ($request->hasFile('image') && ! Storage::disk('public')->exists($image_path)) {
-            Storage::disk('public')->putFileAs('', $request->file('image'), $image_path);
+        if ($request->hasFile('image') && ! Storage::disk('s3')->exists($image_path)) {
+            Storage::disk('s3')->putFileAs('', $request->file('image'), $image_path);
             $battery->update([
                 'image' => $image_path,
             ]);
@@ -90,7 +90,7 @@ class BatteryController extends Controller
                 'record_number' => $battery->record_number,
                 'serial_number' => $battery->serial_number,
                 'last_charge' => date('d/m/Y', strtotime($battery->last_charge)),
-                'image' => $battery->image ? Storage::url($battery->image) : '',
+                'image' => $battery->image ? Storage::disk('s3')->temporaryUrl($battery->image, now()->addMinutes(5)) : '',
                 'created_at' => $battery->created_at->format('d/m/Y'),
                 'updated_at' => $battery->updated_at->format('d/m/Y'),
                 'deleted_at' => $battery->deleted_at,
@@ -113,7 +113,7 @@ class BatteryController extends Controller
                 'record_number' => $battery->record_number,
                 'serial_number' => $battery->serial_number,
                 'last_charge' => $battery->last_charge,
-                'image' => $battery->image ? Storage::url($battery->image) : '',
+                'image' => $battery->image ? Storage::disk('s3')->temporaryUrl($battery->image, now()->addMinutes(5)) : '',
             ],
         ]);
     }
@@ -126,7 +126,7 @@ class BatteryController extends Controller
         $battery->update($request->validated());
 
         if ($request->hasFile('image')) {
-            Storage::disk('public')->putFileAs('', $request->file('image'), $battery->image);
+            Storage::disk('s3')->putFileAs('', $request->file('image'), $battery->image);
         }
 
         return redirect()->route('batteries.index', ['search' => $battery->public_id])

@@ -77,12 +77,12 @@ class FlightPlanController extends Controller
 
             // Store single_file
             $singleFilePath = $file_path.'/single/'.time().'.txt';
-            Storage::disk('public')->put($singleFilePath, file_get_contents($request->file('single_file')->getRealPath()));
+            Storage::disk('s3')->put($singleFilePath, file_get_contents($request->file('single_file')->getRealPath()));
 
             // Store multi file
             foreach ($request->file('multi_file') as $index => $file) {
                 $multiFilePath = $file_path.'/multi/'.($index).'_'.time().'.txt';
-                Storage::disk('public')->put($multiFilePath, file_get_contents($file->getRealPath()));
+                Storage::disk('s3')->put($multiFilePath, file_get_contents($file->getRealPath()));
             }
         });
 
@@ -97,8 +97,8 @@ class FlightPlanController extends Controller
 
         $flight_plan = $this->model->withTrashed()->where('public_id', $id)->first();
 
-        $folder = Storage::disk('public')->files($flight_plan->file.'/single');
-        $file = Storage::disk('public')->get($folder[0]);
+        $folder = Storage::disk('s3')->files($flight_plan->file.'/single');
+        $file = Storage::disk('s3')->get($folder[0]);
 
         if (request()->visualization) {
             return view('map-visualization', [
@@ -130,8 +130,8 @@ class FlightPlanController extends Controller
 
         $flight_plan = $this->model->withTrashed()->where('public_id', $id)->first();
 
-        $folder = Storage::disk('public')->files($flight_plan->file.'/single');
-        $file = Storage::disk('public')->get($folder[0]);
+        $folder = Storage::disk('s3')->files($flight_plan->file.'/single');
+        $file = Storage::disk('s3')->get($folder[0]);
 
         return view('map', [
             'flightplan' => $file,
@@ -159,12 +159,12 @@ class FlightPlanController extends Controller
 
             // Store single_file
             $single_file_path = $flight_plan->file.'/single/'.now().'.txt';
-            Storage::disk('public')->putFileAs('', $single_file_path, $request->single_file);
+            Storage::disk('s3')->putFileAs('', $single_file_path, $request->single_file);
 
             // Store multi file
             foreach ($request->multi_file as $index => $file) {
                 $multi_file_path = $flight_plan->file.'/multi/'.$index + 1 .'_'.now().'.txt';
-                Storage::disk('public')->put($multi_file_path, $file);
+                Storage::disk('s3')->put($multi_file_path, $file);
             }
         });
 

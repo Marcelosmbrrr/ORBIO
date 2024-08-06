@@ -14,7 +14,7 @@ class ReportResource extends ResourceCollection
             return [
                 'id' => $report->public_id,
                 'name' => $report->name,
-                'file' => Storage::url($report->file),
+                'file' => Storage::disk('s3')->temporaryUrl($report->file, now()->addMinutes(20)),
                 'created_at' => $report->created_at->format('d/m/Y'),
                 'updated_at' => $report->updated_at->format('d/m/Y'),
             ];

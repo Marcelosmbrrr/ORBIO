@@ -64,8 +64,8 @@ class EquipmentController extends Controller
 
         $image_path = session('tenant_id').'/equipments/'.$equipment->public_id.'.jpeg';
 
-        if ($request->hasFile('image') && ! Storage::disk('public')->exists($image_path)) {
-            Storage::disk('public')->putFileAs('', $request->file('image'), $image_path);
+        if ($request->hasFile('image') && ! Storage::disk('s3')->exists($image_path)) {
+            Storage::disk('s3')->putFileAs('', $request->file('image'), $image_path);
             $equipment->update([
                 'image' => $image_path,
             ]);
@@ -90,7 +90,7 @@ class EquipmentController extends Controller
                 'record_number' => $equipment->record_number,
                 'serial_number' => $equipment->serial_number,
                 'weight' => $equipment->weight,
-                'image' => $equipment->image ? Storage::url($equipment->image) : '',
+                'image' => $equipment->image ? Storage::disk('s3')->temporaryUrl($equipment->image, now()->addMinutes(5)) : '',
                 'created_at' => $equipment->created_at->format('d/m/Y'),
                 'updated_at' => $equipment->updated_at->format('d/m/Y'),
                 'deleted_at' => $equipment->deleted_at,
@@ -114,7 +114,7 @@ class EquipmentController extends Controller
                 'record_number' => $equipment->record_number,
                 'serial_number' => $equipment->serial_number,
                 'weight' => $equipment->weight,
-                'image' => $equipment->image ? Storage::url($equipment->image) : '',
+                'image' => $equipment->image ? Storage::disk('s3')->temporaryUrl($equipment->image, now()->addMinutes(5)) : '',
             ],
         ]);
     }
@@ -127,7 +127,7 @@ class EquipmentController extends Controller
         $equipment->update($request->validated());
 
         if ($request->hasFile('image')) {
-            Storage::disk('public')->putFileAs('', $request->file('image'), $equipment->image);
+            Storage::disk('s3')->putFileAs('', $request->file('image'), $equipment->image);
         }
 
         return redirect()->route('equipments.index', ['search' => $equipment->public_id])

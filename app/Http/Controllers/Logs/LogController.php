@@ -49,7 +49,7 @@ class LogController extends Controller
                     'file' => $file_path,
                 ]);
 
-                Storage::disk('public')->putFileAs('', $log, $file_path);
+                Storage::disk('s3')->putFileAs('', $log, $file_path);
             }
         });
 
@@ -61,7 +61,7 @@ class LogController extends Controller
     {
         $log = $this->logModel->where('public_id', $log_id)->first();
 
-        $log = Storage::disk('public')->get($log->file);
+        $log = Storage::disk('s3')->get($log->file);
 
         return view('map-visualization', [
             'log' => $log,
@@ -78,7 +78,7 @@ class LogController extends Controller
             $logs = $this->model->whereIn('public_id', $ids)->get();
             foreach ($logs as $log) {
                 $log->delete();
-                Storage::disk('public')->delete($log->file);
+                Storage::disk('s3')->delete($log->file);
             }
         });
 

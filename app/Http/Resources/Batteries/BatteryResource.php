@@ -18,7 +18,7 @@ class BatteryResource extends ResourceCollection
                 'model' => $battery->model,
                 'serial_number' => $battery->serial_number,
                 'last_charge' => date('d/m/Y', strtotime($battery->last_charge)),
-                'image_url' => $battery->image_path ? Storage::url($battery->image_path) : 'none',
+                'image_url' => $battery->image_path ? Storage::disk('s3')->temporaryUrl($battery->image, now()->addMinutes(5)) : 'none',
                 'status' => [
                     'title' => $battery->trashed() ? 'Deletado' : 'Ativo',
                     'style_key' => $battery->trashed() ? 'deleted' : 'active',

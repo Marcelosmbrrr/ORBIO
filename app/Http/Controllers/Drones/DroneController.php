@@ -64,8 +64,8 @@ class DroneController extends Controller
 
         $image_path = session('tenant_id').'/drones/'.$drone->public_id.'.jpeg';
 
-        if ($request->hasFile('image') && ! Storage::disk('public')->exists($image_path)) {
-            Storage::disk('public')->putFileAs('', $request->file('image'), $image_path);
+        if ($request->hasFile('image') && ! Storage::disk('s3')->exists($image_path)) {
+            Storage::disk('s3')->putFileAs('', $request->file('image'), $image_path);
             $drone->update([
                 'image' => $image_path,
             ]);
@@ -90,7 +90,7 @@ class DroneController extends Controller
                 'record_number' => $drone->record_number,
                 'serial_number' => $drone->serial_number,
                 'weight' => $drone->weight,
-                'image' => $drone->image ? Storage::url($drone->image) : '',
+                'image' => $drone->image ? Storage::disk('s3')->temporaryUrl($drone->image, now()->addMinutes(5)) : '',
                 'created_at' => $drone->created_at->format('d/m/Y'),
                 'updated_at' => $drone->updated_at->format('d/m/Y'),
                 'deleted_at' => $drone->deleted_at,
@@ -113,7 +113,7 @@ class DroneController extends Controller
                 'record_number' => $drone->record_number,
                 'serial_number' => $drone->serial_number,
                 'weight' => $drone->weight,
-                'image' => $drone->image ? Storage::url($drone->image) : '',
+                'image' => $drone->image ? Storage::disk('s3')->temporaryUrl($drone->image, now()->addMinutes(5)) : '',
             ],
         ]);
     }
@@ -126,7 +126,7 @@ class DroneController extends Controller
         $drone->update($request->validated());
 
         if ($request->hasFile('image')) {
-            Storage::disk('public')->putFileAs('', $request->file('image'), $drone->image);
+            Storage::disk('s3')->putFileAs('', $request->file('image'), $drone->image);
         }
 
         return redirect()->route('drones.index', ['search' => $drone->public_id])
