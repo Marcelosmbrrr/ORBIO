@@ -14,7 +14,8 @@ use App\Http\Resources\Logs\LogResource;
 use App\Http\Resources\Reports\ReportResource;
 use App\Http\Resources\ServiceOrders\ServiceOrderResource;
 use App\Http\Resources\ServiceOrders\ServiceOrderViewResource;
-use App\Http\Resources\Users\UserResource;
+use App\Http\Resources\Users\PilotResource;
+use App\Http\Resources\Users\ClientResource;
 use App\Models\Battery;
 use App\Models\Drone;
 use App\Models\Equipment;
@@ -53,7 +54,7 @@ class ServiceOrderController extends Controller
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'service-orders', (int) $page);
 
         return Inertia::render('Authenticated/ServiceOrders/Index', [
-            'data' => new ServiceOrderResource($data),
+            'pagination' => ServiceOrderResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -73,7 +74,7 @@ class ServiceOrderController extends Controller
         // https://inertiajs.com/partial-reloads
 
         return Inertia::render('Authenticated/ServiceOrders/CreateServiceOrder', [
-            'pilots' => fn () => new UserResource(
+            'pilots' => fn () => PilotResource::collection(
                 User::filter('active')
                     ->where('tenant_id', session('tenant_id'))
                     ->where('role', 'piloto')
@@ -82,7 +83,7 @@ class ServiceOrderController extends Controller
                     ->orderBy($order_by)
                     ->paginate((int) $limit, $columns = ['*'], $pageName = 'pilots', (int) $page)
             ),
-            'clients' => Inertia::lazy(fn () => new UserResource(
+            'clients' => Inertia::lazy(fn () => ClientResource::collection(
                 User::filter('active')
                     ->where('tenant_id', session('tenant_id'))
                     ->where('role', 'cliente')
@@ -90,28 +91,28 @@ class ServiceOrderController extends Controller
                     ->orderBy($order_by)
                     ->paginate((int) $limit, $columns = ['*'], $pageName = 'clients', (int) $page)
             )),
-            'flightplans' => Inertia::lazy(fn () => new FlightPlanResource(
+            'flightplans' => Inertia::lazy(fn () => FlightPlanResource::collection(
                 FlightPlan::filter('active')
                     ->where('tenant_id', session('tenant_id'))
                     ->search($search)
                     ->orderBy($order_by)
                     ->paginate((int) $limit, $columns = ['*'], $pageName = 'flight-plans', (int) $page)
             )),
-            'drones' => Inertia::lazy(fn () => new DroneResource(
+            'drones' => Inertia::lazy(fn () => DroneResource::collection(
                 Drone::filter('active')
                     ->where('tenant_id', session('tenant_id'))
                     ->search($search)
                     ->orderBy($order_by)
                     ->paginate((int) $limit, $columns = ['*'], $pageName = 'drones', (int) $page)
             )),
-            'batteries' => Inertia::lazy(fn () => new BatteryResource(
+            'batteries' => Inertia::lazy(fn () => BatteryResource::collection(
                 Battery::filter('active')
                     ->where('tenant_id', session('tenant_id'))
                     ->search($search)
                     ->orderBy($order_by)
                     ->paginate((int) $limit, $columns = ['*'], $pageName = 'batteries', (int) $page)
             )),
-            'equipments' => Inertia::lazy(fn () => new EquipmentResource(
+            'equipments' => Inertia::lazy(fn () => EquipmentResource::collection(
                 Equipment::filter('active')
                     ->where('tenant_id', session('tenant_id'))
                     ->search($search)
@@ -231,13 +232,13 @@ class ServiceOrderController extends Controller
                 'edit_report' => $service_order->attendant && $service_order->situation === 'approved' ? $service_order->attendant->id === Auth::user()->id : false,
             ],
             'serviceorder' => new ServiceOrderViewResource($service_order),
-            'flightplans' => fn () => new FlightPlanResource($service_order->flight_plans),
-            'drones' => fn () => new DroneResource($service_order->drones),
-            'batteries' => fn () => new BatteryResource($service_order->batteries),
-            'equipments' => fn () => new EquipmentResource($service_order->equipments),
-            'incidents' => fn () => new IncidentResource($service_order->incidents),
-            'logs' => fn () => new LogResource($service_order->logs),
-            'reports' => fn () => new ReportResource($service_order->reports),
+            'flightplans' => fn () => FlightPlanResource::collection($service_order->flight_plans),
+            'drones' => fn () => DroneResource::collection($service_order->drones),
+            'batteries' => fn () => BatteryResource::collection($service_order->batteries),
+            'equipments' => fn () => EquipmentResource::collection($service_order->equipments),
+            'incidents' => fn () => IncidentResource::collection($service_order->incidents),
+            'logs' => fn () => LogResource::collection($service_order->logs),
+            'reports' => fn () => ReportResource::collection($service_order->reports),
         ]);
     }
 }

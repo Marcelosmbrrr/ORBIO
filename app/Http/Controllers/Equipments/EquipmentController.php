@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Equipments;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Equipments\CreateEquipmentRequest;
-use App\Http\Requests\Equipments\EditEquipmentRequest;
-use App\Http\Resources\Equipments\EquipmentResource;
-use App\Models\Equipment;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
+use App\Http\Requests\Equipments\CreateEquipmentRequest;
+use App\Http\Requests\Equipments\EditEquipmentRequest;
+use App\Http\Resources\Equipments\EquipmentResource;
+use App\Models\Equipment;
 
 class EquipmentController extends Controller
 {
@@ -39,7 +39,7 @@ class EquipmentController extends Controller
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'equipments', (int) $page);
 
         return Inertia::render('Authenticated/Equipments/Index', [
-            'data' => new EquipmentResource($data),
+            'pagination' => EquipmentResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -82,20 +82,7 @@ class EquipmentController extends Controller
         $equipment = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Equipments/ShowEquipment', [
-            'equipment' => [
-                'id' => $equipment->public_id,
-                'name' => $equipment->name,
-                'manufacturer' => $equipment->manufacturer,
-                'model' => $equipment->model,
-                'record_number' => $equipment->record_number,
-                'serial_number' => $equipment->serial_number,
-                'weight' => $equipment->weight,
-                'image' => $equipment->image ? Storage::disk('s3')->temporaryUrl($equipment->image, now()->addMinutes(5)) : '',
-                'created_at' => $equipment->created_at->format('d/m/Y'),
-                'updated_at' => $equipment->updated_at->format('d/m/Y'),
-                'deleted_at' => $equipment->deleted_at,
-
-            ],
+            'equipment' => new EquipmentResource($equipment)
         ]);
     }
 
@@ -106,16 +93,7 @@ class EquipmentController extends Controller
         $equipment = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Equipments/EditEquipment', [
-            'equipment' => [
-                'id' => $equipment->public_id,
-                'name' => $equipment->name,
-                'manufacturer' => $equipment->manufacturer,
-                'model' => $equipment->model,
-                'record_number' => $equipment->record_number,
-                'serial_number' => $equipment->serial_number,
-                'weight' => $equipment->weight,
-                'image' => $equipment->image ? Storage::disk('s3')->temporaryUrl($equipment->image, now()->addMinutes(5)) : '',
-            ],
+            'equipment' => new EquipmentResource($equipment)
         ]);
     }
 
@@ -141,10 +119,7 @@ class EquipmentController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $equipments = $this->model->whereIn('public_id', $ids)->get();
-            foreach ($equipments as $equipment) {
-                $equipment->delete();
-            }
+            $this->model->whereIn('public_id', $ids)->delete();
         });
 
         return to_route('equipments.index')

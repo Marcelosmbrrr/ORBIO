@@ -1,60 +1,82 @@
-import * as React from 'react';
+import * as React from "react";
 import { router, usePage } from "@inertiajs/react";
 // Custom
-import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
-import { CreatePilot } from '@/Components/Pilots/CreatePilot';
-import { EditPilot } from '@/Components/Pilots/EditPilot';
-import { ShowPilot } from '@/Components/Pilots/ShowPilot';
-import { DeleteOrUndeleteResource } from '@/Components/Shared/Modal/DeleteOrUndeleteResource';
-import { LimitSelector } from '@/Components/Shared/Pagination/LimitSelector';
-import { OrderSelector } from '@/Components/Shared/Pagination/OrderSelector';
-import { Alert } from '@/Components/Alert';
+import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
+import { CreatePilot } from "@/Components/Pilots/CreatePilot";
+import { EditPilot } from "@/Components/Pilots/EditPilot";
+import { ShowPilot } from "@/Components/Pilots/ShowPilot";
+import { DeleteOrUndeleteResource } from "@/Components/Shared/Modal/DeleteOrUndeleteResource";
+import { LimitSelector } from "@/Components/Shared/Pagination/LimitSelector";
+import { OrderSelector } from "@/Components/Shared/Pagination/OrderSelector";
+import { Alert } from "@/Components/Alert";
 // Types
-import { PilotSelected, PilotRecord, Meta } from './types';
+import { PilotSelected, PilotRecord, Meta } from "./types";
 
-type QueryParams = { page: number, search: string, order_by: string, limit: string, group: "all" | "verified" | "unverified" | "deleted" }
+type QueryParams = {
+    page: number;
+    search: string;
+    order_by: string;
+    limit: string;
+    group: "all" | "verified" | "unverified" | "deleted";
+};
 
 const statusClassname: { [key: string]: string } = {
     verified: "h-2.5 w-2.5 rounded-full bg-green-500 mr-2",
     unverified: "h-2.5 w-2.5 rounded-full bg-yellow-500 mr-2",
-    deleted: "h-2.5 w-2.5 rounded-full bg-red-500 mr-2"
-}
+    deleted: "h-2.5 w-2.5 rounded-full bg-red-500 mr-2",
+};
 
-const defaultParams: QueryParams = { page: 1, search: "", order_by: "id", limit: "10", group: "all" };
+const defaultParams: QueryParams = {
+    page: 1,
+    search: "",
+    order_by: "id",
+    limit: "10",
+    group: "all",
+};
 
 export default function Pilots() {
+    const {
+        auth,
+        pagination,
+        queryParams = null,
+        success,
+    }: any = usePage().props;
 
-    const { auth, data, queryParams = null, success }: any = usePage().props;
-
-    const pilots: PilotRecord[] = data.data;
-    const meta: Meta = data.meta;
+    const pilots: PilotRecord[] = pagination.data;
+    const meta: Meta = pagination.meta;
     const currentParams: QueryParams = { ...defaultParams, ...queryParams };
 
     const [selections, setSelections] = React.useState<PilotSelected[]>([]);
     const [search, setSearch] = React.useState<string>("");
 
-    const handleNavigation = React.useCallback((params: Partial<QueryParams>) => {
-        setSelections([]);
-        router.get("pilots", { ...currentParams, ...params });
-    }, [currentParams]);
+    const handleNavigation = React.useCallback(
+        (params: Partial<QueryParams>) => {
+            setSelections([]);
+            router.get("pilots", { ...currentParams, ...params });
+        },
+        [currentParams]
+    );
 
-    const handleSearchSubmit = React.useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleNavigation({ search });
-        }
-    }, [search]);
+    const handleSearchSubmit = React.useCallback(
+        (e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === "Enter") {
+                handleNavigation({ search });
+            }
+        },
+        [search]
+    );
 
     const toggleSelection = (recordId: string) => {
-        setSelections(prev => {
-            const exists = prev.some(selection => selection.id === recordId);
+        setSelections((prev) => {
+            const exists = prev.some((selection) => selection.id === recordId);
             if (exists) {
-                return prev.filter(selection => selection.id !== recordId);
+                return prev.filter((selection) => selection.id !== recordId);
             } else {
-                const pilot = pilots.find(pilot => pilot.id === recordId);
+                const pilot = pilots.find((pilot) => pilot.id === recordId);
                 if (pilot) {
                     const newSelection: PilotSelected = {
                         id: pilot.id,
-                        is_deleted: Boolean(pilot.deleted_at)
+                        is_deleted: Boolean(pilot.deleted_at),
                     };
                     return [...prev, newSelection];
                 }
@@ -63,25 +85,40 @@ export default function Pilots() {
         });
     };
 
-    console.log(selections)
+    console.log(selections);
 
-    const isSelected = (recordId: string) => selections.some(selection => selection.id === recordId);
-    const canOpenDeleteOrUndelete = selections.length > 0 && auth.user.authorization.users.write && selections.every(sel => sel.is_deleted === selections[0].is_deleted);
+    const isSelected = (recordId: string) =>
+        selections.some((selection) => selection.id === recordId);
+    const canOpenDeleteOrUndelete =
+        selections.length > 0 &&
+        auth.user.authorization.users.write &&
+        selections.every((sel) => sel.is_deleted === selections[0].is_deleted);
 
     return (
         <AuthenticatedLayout>
-            <div className='flex flex-col h-full'>
+            <div className="flex flex-col h-full">
                 <Breadcrumb />
-                <div className='grow py-5 rounded'>
-                    {success &&
-                        <Alert type='success' message={success} />
-                    }
+                <div className="grow py-5 rounded">
+                    {success && <Alert type="success" message={success} />}
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-                        <SearchInput value={search} onChange={setSearch} onSubmit={handleSearchSubmit} />
+                        <SearchInput
+                            value={search}
+                            onChange={setSearch}
+                            onSubmit={handleSearchSubmit}
+                        />
                         <ActionButtons
-                            canCreate={selections.length === 0 && auth.user.authorization.users.write}
-                            canEdit={selections.length === 1 && auth.user.authorization.users.write}
-                            canShow={selections.length === 1 && auth.user.authorization.users.write}
+                            canCreate={
+                                selections.length === 0 &&
+                                auth.user.authorization.users.write
+                            }
+                            canEdit={
+                                selections.length === 1 &&
+                                auth.user.authorization.users.write
+                            }
+                            canShow={
+                                selections.length === 1 &&
+                                auth.user.authorization.users.write
+                            }
                             canDeleteOrUndelete={canOpenDeleteOrUndelete}
                             selections={selections}
                             reload={handleNavigation}
@@ -89,10 +126,26 @@ export default function Pilots() {
                         />
                     </div>
                     <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <FilterGroup currentGroup={currentParams.group} onChange={(group: "all" | "verified" | "unverified" | "deleted") => handleNavigation({ group, page: 1 })} />
-                    <PilotTable pilots={pilots} isSelected={isSelected} toggleSelection={toggleSelection} />
+                    <FilterGroup
+                        currentGroup={currentParams.group}
+                        onChange={(
+                            group: "all" | "verified" | "unverified" | "deleted"
+                        ) => handleNavigation({ group, page: 1 })}
+                    />
+                    <PilotTable
+                        pilots={pilots}
+                        isSelected={isSelected}
+                        toggleSelection={toggleSelection}
+                        canEdit={auth.user.authorization.users.write}
+                    />
                     <PaginationInfo meta={meta} />
-                    <Paginator current_page={meta.current_page} pages={meta.last_page} changePage={(page: number) => handleNavigation({ page })} />
+                    <Paginator
+                        current_page={meta.current_page}
+                        pages={meta.last_page}
+                        changePage={(page: number) =>
+                            handleNavigation({ page })
+                        }
+                    />
                 </div>
             </div>
         </AuthenticatedLayout>
@@ -103,39 +156,85 @@ const Breadcrumb = () => (
     <ol className="flex items-center whitespace-nowrap">
         <li className="inline-flex items-center">
             <a className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                <svg className="flex-shrink-0 me-3 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                    className="flex-shrink-0 me-3 size-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
                 Home
             </a>
-            <svg className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+                className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            >
                 <path d="m9 18 6-6-6-6"></path>
             </svg>
         </li>
         <li className="inline-flex items-center">
             <span className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
                 Usuários
-                <svg className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                    className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                >
                     <path d="m9 18 6-6-6-6"></path>
                 </svg>
             </span>
         </li>
-        <li className="inline-flex items-center text-sm font-semibold text-gray-800 dark:text-white truncate" aria-current="page">
+        <li
+            className="inline-flex items-center text-sm font-semibold text-gray-800 dark:text-white truncate"
+            aria-current="page"
+        >
             Pilotos
         </li>
     </ol>
 );
 
-const SearchInput = ({ value, onChange, onSubmit }: { value: string, onChange: (value: string) => void, onSubmit: (e: React.KeyboardEvent<HTMLInputElement>) => void }) => (
+const SearchInput = ({
+    value,
+    onChange,
+    onSubmit,
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    onSubmit: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}) => (
     <div className="w-full md:w-1/2">
         <div>
-            <label htmlFor="simple-search" className="sr-only">Pesquisar</label>
+            <label htmlFor="simple-search" className="sr-only">
+                Pesquisar
+            </label>
             <div className="relative w-full">
                 <input
                     type="search"
                     value={value}
-                    onChange={e => onChange(e.target.value)}
+                    onChange={(e) => onChange(e.target.value)}
                     onKeyDown={onSubmit}
                     placeholder="Pesquisar"
                     className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-gray-700 dark:border-gray-900 dark:text-neutral-400 dark:placeholder-neutral-300 dark:focus:ring-blue-600"
@@ -145,48 +244,93 @@ const SearchInput = ({ value, onChange, onSubmit }: { value: string, onChange: (
     </div>
 );
 
-const ActionButtons = ({ canCreate, canEdit, canShow, canDeleteOrUndelete, selections, reload, currentParams }: any) => (
+const ActionButtons = ({
+    canCreate,
+    canDeleteOrUndelete,
+    selections,
+    reload,
+    currentParams,
+}: any) => (
     <div className="flex justify-start md:justify-end flex-shrink-0 w-full md:w-auto md:flex-row md:space-y-0 md:items-center space-x-1">
         <CreatePilot can_open={canCreate} />
-        <EditPilot can_open={canEdit} selection={selections[0]} />
-        <ShowPilot can_open={canShow} selection={selections[0]} />
         <DeleteOrUndeleteResource
             can_open={canDeleteOrUndelete}
             reload={reload}
-            action={currentParams.group === "deleted" || selections.every((sel: PilotSelected) => sel.is_deleted) ? "undelete" : "delete"}
-            request_url={currentParams.group === "deleted" || selections.every((sel: PilotSelected) => sel.is_deleted)
-                ? `/actions/undelete/users?ids=${selections.map((selection: any) => selection.id).join(',')}`
-                : `/pilots/delete-many?ids=${selections.map((selection: any) => selection.id).join(',')}`
+            action={
+                currentParams.group === "deleted" ||
+                selections.every((sel: PilotSelected) => sel.is_deleted)
+                    ? "undelete"
+                    : "delete"
+            }
+            request_url={
+                currentParams.group === "deleted" ||
+                selections.every((sel: PilotSelected) => sel.is_deleted)
+                    ? `/actions/undelete/users?ids=${selections
+                          .map((selection: any) => selection.id)
+                          .join(",")}`
+                    : `/pilots/delete-many?ids=${selections
+                          .map((selection: any) => selection.id)
+                          .join(",")}`
             }
         />
-        <LimitSelector value={currentParams.limit} changeLimit={(limit: string) => reload({ limit })} />
-        <OrderSelector value={currentParams.order_by} options={[{ id: "id", name: "criação" }, { id: "name", name: "nome" }, { id: "email", name: "email" }]} changeOrderBy={(order_by: string) => reload({ order_by })} />
+        <LimitSelector
+            value={currentParams.limit}
+            changeLimit={(limit: string) => reload({ limit })}
+        />
+        <OrderSelector
+            value={currentParams.order_by}
+            options={[
+                { id: "id", name: "criação" },
+                { id: "name", name: "nome" },
+                { id: "email", name: "email" },
+            ]}
+            changeOrderBy={(order_by: string) => reload({ order_by })}
+        />
     </div>
 );
 
-const FilterGroup = ({ currentGroup, onChange }: { currentGroup: "all" | "verified" | "unverified" | "deleted", onChange: (group: "all" | "verified" | "unverified" | "deleted") => void }) => {
+const FilterGroup = ({
+    currentGroup,
+    onChange,
+}: {
+    currentGroup: "all" | "verified" | "unverified" | "deleted";
+    onChange: (group: "all" | "verified" | "unverified" | "deleted") => void;
+}) => {
     const labels: { [key: string]: string } = {
         all: "Todos",
         verified: "Verificados",
         unverified: "Não Verificados",
-        deleted: "Deletados"
+        deleted: "Deletados",
     };
 
     return (
-        <div className='flex space-x-3'>
-            <span className="font-medium text-gray-900 dark:text-white">Filtrar:</span>
+        <div className="flex space-x-3">
+            <span className="font-medium text-gray-900 dark:text-white">
+                Filtrar:
+            </span>
             <div className="flex">
-                {['all', 'verified', 'unverified', 'deleted'].map(group => (
+                {["all", "verified", "unverified", "deleted"].map((group) => (
                     <div key={group} className="flex items-center me-4">
                         <input
                             checked={currentGroup === group}
-                            onClick={() => onChange(group as "all" | "verified" | "unverified" | "deleted")}
+                            onClick={() =>
+                                onChange(
+                                    group as
+                                        | "all"
+                                        | "verified"
+                                        | "unverified"
+                                        | "deleted"
+                                )
+                            }
                             id={`inline-${group}-radio`}
                             type="radio"
                             name="inline-radio-group"
                             className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                         />
-                        <label htmlFor={`inline-${group}-radio`} className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        <label
+                            htmlFor={`inline-${group}-radio`}
+                            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                        >
                             {labels[group]}
                         </label>
                     </div>
@@ -196,47 +340,90 @@ const FilterGroup = ({ currentGroup, onChange }: { currentGroup: "all" | "verifi
     );
 };
 
-const PilotTable = ({ pilots, isSelected, toggleSelection }: any) => (
+const PilotTable = ({ pilots, isSelected, toggleSelection, canEdit }: any) => (
     <div className="mt-2 overflow-x-auto sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-800 dark:text-white uppercase bg-gray-100 dark:bg-gray-700">
                 <tr>
                     <th scope="col" className="px-6 py-3">
                         <div className="flex items-center">
-                            <input disabled type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+                            <input
+                                disabled
+                                type="checkbox"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                            />
                         </div>
                     </th>
-                    <th scope="col" className="text-left px-6 py-3">Nome</th>
-                    <th scope="col" className="text-left px-6 py-3">Email</th>
-                    <th scope="col" className="text-left px-6 py-3">Status</th>
+                    <th scope="col" className="text-left px-6 py-3">
+                        Nome
+                    </th>
+                    <th scope="col" className="text-left px-6 py-3">
+                        Email
+                    </th>
+                    <th scope="col" className="text-left px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" className="text-right px-6 py-3">
+                        Editar / Visualizar
+                    </th>
                 </tr>
             </thead>
             <tbody>
-                {pilots.length > 0 ? pilots.map((pilot: PilotRecord) => (
-                    <tr key={pilot.id} className="bg-white dark:text-white border-b dark:bg-gray-900 dark:border-gray-700 hover:bg-gray-50">
-                        <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                            <div className="flex items-center">
-                                <input
-                                    checked={isSelected(pilot.id)}
-                                    onChange={() => toggleSelection(pilot.id)}
-                                    value={pilot.id}
-                                    type="checkbox"
-                                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                                />
-                            </div>
-                        </th>
-                        <td className="text-left px-6 py-4">{pilot.name}</td>
-                        <td className="text-left px-6 py-4">{pilot.email}</td>
-                        <td className="text-left px-6 py-4">
-                            <div className="flex items-center text-gray-900 dark:text-white">
-                                <div className={statusClassname[pilot.status.style_key]}></div> {pilot.status.title}
-                            </div>
-                        </td>
-                    </tr>
-                )) : (
+                {pilots.length > 0 ? (
+                    pilots.map((pilot: PilotRecord) => (
+                        <tr
+                            key={pilot.id}
+                            className="bg-white dark:text-white border-b dark:bg-gray-900 dark:border-gray-700 hover:bg-gray-50"
+                        >
+                            <th
+                                scope="row"
+                                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
+                            >
+                                <div className="flex items-center">
+                                    <input
+                                        checked={isSelected(pilot.id)}
+                                        onChange={() =>
+                                            toggleSelection(pilot.id)
+                                        }
+                                        value={pilot.id}
+                                        type="checkbox"
+                                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    />
+                                </div>
+                            </th>
+                            <td className="text-left px-6 py-4">
+                                {pilot.name}
+                            </td>
+                            <td className="text-left px-6 py-4">
+                                {pilot.email}
+                            </td>
+                            <td className="text-left px-6 py-4">
+                                <div className="flex items-center text-gray-900 dark:text-white">
+                                    <div
+                                        className={
+                                            statusClassname[
+                                                pilot.status.style_key
+                                            ]
+                                        }
+                                    ></div>{" "}
+                                    {pilot.status.title}
+                                </div>
+                            </td>
+                            <td className="flex justify-end gap-x-2 text-left px-6 py-4">
+                                <EditPilot id={pilot.id} can_open={canEdit} />
+                                <ShowPilot id={pilot.id} />
+                            </td>
+                        </tr>
+                    ))
+                ) : (
                     <tr className="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                        <td colSpan={4} className="px-6 py-4 whitespace-nowrap dark:text-white">
-                            <div className="flex items-center justify-center">Nenhum registro encontrado.</div>
+                        <td
+                            colSpan={5}
+                            className="px-6 py-4 whitespace-nowrap dark:text-white"
+                        >
+                            <div className="flex items-center justify-center">
+                                Nenhum registro encontrado.
+                            </div>
                         </td>
                     </tr>
                 )}
@@ -248,12 +435,27 @@ const PilotTable = ({ pilots, isSelected, toggleSelection }: any) => (
 const PaginationInfo = ({ meta }: { meta: Meta }) => (
     <nav className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 mt-2">
         <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-            Registros encontrados: <span className="mx-1 font-semibold text-gray-900 dark:text-white">{meta.total}</span> | Páginas: <span className="mx-1 font-semibold text-gray-900 dark:text-white">{meta.last_page}</span>
+            Registros encontrados:{" "}
+            <span className="mx-1 font-semibold text-gray-900 dark:text-white">
+                {meta.total}
+            </span>{" "}
+            | Páginas:{" "}
+            <span className="mx-1 font-semibold text-gray-900 dark:text-white">
+                {meta.last_page}
+            </span>
         </span>
     </nav>
 );
 
-const Paginator = ({ current_page, pages, changePage }: { current_page: number, pages: number, changePage: (page: number) => void }) => {
+const Paginator = ({
+    current_page,
+    pages,
+    changePage,
+}: {
+    current_page: number;
+    pages: number;
+    changePage: (page: number) => void;
+}) => {
     const getPageNumbers = () => {
         if (pages <= 3) {
             return [...Array(pages)].map((_, i) => i + 1);
@@ -285,7 +487,9 @@ const Paginator = ({ current_page, pages, changePage }: { current_page: number, 
                 </li>
                 <li>
                     <button
-                        onClick={() => changePage(Math.max(current_page - 1, 1))}
+                        onClick={() =>
+                            changePage(Math.max(current_page - 1, 1))
+                        }
                         className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                         &lt;
@@ -293,12 +497,20 @@ const Paginator = ({ current_page, pages, changePage }: { current_page: number, 
                 </li>
                 {pageNumbers.map((page, i) => (
                     <li key={i}>
-                        {i === 3 && pageNumbers.length > 3 && current_page <= pages - 3 ? (
-                            <span className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600">...</span>
+                        {i === 3 &&
+                        pageNumbers.length > 3 &&
+                        current_page <= pages - 3 ? (
+                            <span className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600">
+                                ...
+                            </span>
                         ) : (
                             <button
                                 onClick={() => changePage(page)}
-                                className={`px-3 py-2 leading-tight ${current_page === page ? 'text-blue-600 bg-blue-50 dark:bg-gray-600 dark:text-white' : 'text-gray-500 bg-white dark:bg-gray-700 dark:text-gray-400'} border border-gray-300 dark:border-gray-600 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-600 dark:hover:text-white`}
+                                className={`px-3 py-2 leading-tight ${
+                                    current_page === page
+                                        ? "text-blue-600 bg-blue-50 dark:bg-gray-600 dark:text-white"
+                                        : "text-gray-500 bg-white dark:bg-gray-700 dark:text-gray-400"
+                                } border border-gray-300 dark:border-gray-600 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-600 dark:hover:text-white`}
                             >
                                 {page}
                             </button>
@@ -307,7 +519,9 @@ const Paginator = ({ current_page, pages, changePage }: { current_page: number, 
                 ))}
                 <li>
                     <button
-                        onClick={() => changePage(Math.min(current_page + 1, pages))}
+                        onClick={() =>
+                            changePage(Math.min(current_page + 1, pages))
+                        }
                         className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
                     >
                         &gt;

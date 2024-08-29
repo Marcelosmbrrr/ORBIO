@@ -3,23 +3,19 @@
 namespace App\Http\Resources\Logs;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class LogResource extends ResourceCollection
+class LogResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return $this->collection->map(function ($log) {
-
-            return [
-                'id' => $log->public_id,
-                'name' => $log->name,
-                'file' => Storage::disk('s3')->get($log->file),
-                'created_at' => $log->created_at->format('d/m/Y'),
-                'updated_at' => $log->updated_at->format('d/m/Y'),
-            ];
-
-        })->all();
+        return [
+            'id' => $this->public_id,
+            'name' => $this->name,
+            'file' => Storage::disk('s3')->get($this->file),
+            'created_at' => $this->created_at->format('d/m/Y'),
+            'updated_at' => $this->updated_at->format('d/m/Y'),
+        ];
     }
 }

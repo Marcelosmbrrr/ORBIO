@@ -5,17 +5,17 @@ import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 export default function EditBattery({ battery }: any) {
 
     const { data, setData, patch, processing, errors } = useForm({
-        name: battery.name,
-        manufacturer: battery.manufacturer,
-        model: battery.model,
-        serial_number: battery.serial_number,
-        last_charge: battery.last_charge,
-        image: battery.image_url,
+        name: battery.data.name,
+        manufacturer: battery.data.manufacturer,
+        model: battery.data.model,
+        serial_number: battery.data.serial_number,
+        last_charge: battery.data.last_charge,
+        image: battery.data.image_url,
     });
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/batteries/" + battery.id);
+        patch("/batteries/" + battery.data.id);
     };
 
     function onChangeImage(e: any) {

@@ -66,6 +66,13 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        if (!is_null($user->deleted_at)) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'A conta foi desativada',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

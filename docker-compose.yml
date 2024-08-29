@@ -1,31 +1,33 @@
 version: "3.7"
 
 services:
-    # image project
+    # App
     app:
         build:
             context: .
-            dockerfile: ./docker/Dockerfile
+            dockerfile: Dockerfile
         restart: unless-stopped
         working_dir: /var/www/
         volumes:
             - ./:/var/www
+        depends_on:
+            - redis
         networks:
-            - laravel
+            - orbio
 
-    # nginx
+    # Nginx
     nginx:
         image: nginx:alpine
         restart: unless-stopped
         ports:
-            - "8989:80"
+            - "8000:80"
         volumes:
             - ./:/var/www
             - ./docker/nginx/:/etc/nginx/conf.d/
         networks:
-            - laravel
+            - orbio
 
-    # db mysql
+    # Database
     db:
         image: mysql:5.7.22
         restart: unless-stopped
@@ -37,10 +39,31 @@ services:
         volumes:
             - ./.docker/mysql/dbdata:/var/lib/mysql
         ports:
-            - "3388:3306"
+            - "3307:3306"
         networks:
-            - laravel
+            - orbio
+
+    # Queue
+    # queue:
+    #     build:
+    #         context: ./
+    #         dockerfile: Dockerfile
+    #     restart: unless-stopped
+    #     command: "php artisan queue:work"
+    #     volumes:
+    #         - ./:/var/www
+    #     depends_on:
+    #         - redis
+    #         - app
+    #     networks:
+    #         - orbio
+
+    # Redis
+    redis:
+        image: redis:latest
+        networks:
+            - orbio
 
 networks:
-    laravel:
+    orbio:
         driver: bridge

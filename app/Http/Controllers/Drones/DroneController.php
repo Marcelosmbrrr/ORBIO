@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Drones;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Drones\CreateDroneRequest;
-use App\Http\Requests\Drones\EditDroneRequest;
-use App\Http\Resources\Drones\DroneResource;
-use App\Models\Drone;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Inertia\Inertia;
+use App\Http\Requests\Drones\CreateDroneRequest;
+use App\Http\Requests\Drones\EditDroneRequest;
+use App\Http\Resources\Drones\DroneResource;
+use App\Models\Drone;
 
 class DroneController extends Controller
 {
@@ -39,7 +39,7 @@ class DroneController extends Controller
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'drones', (int) $page);
 
         return Inertia::render('Authenticated/Drones/Index', [
-            'data' => new DroneResource($data),
+            'pagination' => DroneResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -82,19 +82,7 @@ class DroneController extends Controller
         $drone = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Drones/ShowDrone', [
-            'drone' => [
-                'id' => $drone->public_id,
-                'name' => $drone->name,
-                'manufacturer' => $drone->manufacturer,
-                'model' => $drone->model,
-                'record_number' => $drone->record_number,
-                'serial_number' => $drone->serial_number,
-                'weight' => $drone->weight,
-                'image' => $drone->image ? Storage::disk('s3')->temporaryUrl($drone->image, now()->addMinutes(5)) : '',
-                'created_at' => $drone->created_at->format('d/m/Y'),
-                'updated_at' => $drone->updated_at->format('d/m/Y'),
-                'deleted_at' => $drone->deleted_at,
-            ],
+            'drone' => new DroneResource($drone)
         ]);
     }
 
@@ -105,16 +93,7 @@ class DroneController extends Controller
         $drone = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Drones/EditDrone', [
-            'drone' => [
-                'id' => $drone->public_id,
-                'name' => $drone->name,
-                'manufacturer' => $drone->manufacturer,
-                'model' => $drone->model,
-                'record_number' => $drone->record_number,
-                'serial_number' => $drone->serial_number,
-                'weight' => $drone->weight,
-                'image' => $drone->image ? Storage::disk('s3')->temporaryUrl($drone->image, now()->addMinutes(5)) : '',
-            ],
+            'drone' => new DroneResource($drone)
         ]);
     }
 
@@ -140,10 +119,7 @@ class DroneController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $drones = $this->model->whereIn('public_id', $ids)->get();
-            foreach ($drones as $drone) {
-                $drone->delete();
-            }
+            $this->model->whereIn('public_id', $ids)->delete();
         });
 
         return redirect()->route('drones.index')

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Batteries;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Inertia\Inertia;
 use App\Http\Requests\Batteries\CreateBatteryRequest;
 use App\Http\Requests\Batteries\EditBatteryRequest;
 use App\Http\Resources\Batteries\BatteryResource;
 use App\Models\Battery;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
-use Inertia\Inertia;
 
 class BatteryController extends Controller
 {
@@ -39,7 +39,7 @@ class BatteryController extends Controller
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'batteries', (int) $page);
 
         return Inertia::render('Authenticated/Batteries/Index', [
-            'data' => new BatteryResource($data),
+            'pagination' => BatteryResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -82,19 +82,7 @@ class BatteryController extends Controller
         $battery = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Batteries/ShowBattery', [
-            'battery' => [
-                'id' => $battery->public_id,
-                'name' => $battery->name,
-                'manufacturer' => $battery->manufacturer,
-                'model' => $battery->model,
-                'record_number' => $battery->record_number,
-                'serial_number' => $battery->serial_number,
-                'last_charge' => date('d/m/Y', strtotime($battery->last_charge)),
-                'image' => $battery->image ? Storage::disk('s3')->temporaryUrl($battery->image, now()->addMinutes(5)) : '',
-                'created_at' => $battery->created_at->format('d/m/Y'),
-                'updated_at' => $battery->updated_at->format('d/m/Y'),
-                'deleted_at' => $battery->deleted_at,
-            ],
+            'battery' => new BatteryResource($battery)
         ]);
     }
 
@@ -105,16 +93,7 @@ class BatteryController extends Controller
         $battery = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Batteries/EditBattery', [
-            'battery' => [
-                'id' => $battery->public_id,
-                'name' => $battery->name,
-                'manufacturer' => $battery->manufacturer,
-                'model' => $battery->model,
-                'record_number' => $battery->record_number,
-                'serial_number' => $battery->serial_number,
-                'last_charge' => $battery->last_charge,
-                'image' => $battery->image ? Storage::disk('s3')->temporaryUrl($battery->image, now()->addMinutes(5)) : '',
-            ],
+            'battery' => new BatteryResource($battery)
         ]);
     }
 
@@ -140,10 +119,7 @@ class BatteryController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $batteries = $this->model->whereIn('public_id', $ids)->get();
-            foreach ($batteries as $battery) {
-                $battery->delete();
-            }
+            $this->model->whereIn('public_id', $ids)->delete();
         });
 
         return to_route('batteries.index')

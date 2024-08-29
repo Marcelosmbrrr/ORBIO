@@ -29,8 +29,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function tenant()
     {
-        if (in_array($this->role, ['gerente', 'piloto'])) {
-            return $this->belongsTo(User::class, 'user_id');
+        if (in_array($this->role, ['cliente', 'piloto'])) {
+            return $this->belongsTo(User::class, 'tenant_id');
         }
 
         return null;
@@ -39,7 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function users()
     {
         if ($this->role == 'gerente') {
-            return $this->hasMany(User::class, 'user_id');
+            return $this->hasMany(User::class, 'tenant_id');
         }
 
         return null;

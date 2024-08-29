@@ -5,8 +5,6 @@ import { useSnackbar } from 'notistack';
 
 export default function CreateManager() {
 
-    const { enqueueSnackbar } = useSnackbar();
-
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',

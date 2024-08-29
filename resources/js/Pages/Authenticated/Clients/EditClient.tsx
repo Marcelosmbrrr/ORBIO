@@ -2,17 +2,17 @@ import * as React from 'react';
 import { useForm, Link } from '@inertiajs/react';
 import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 
-export default function EditPilot({ user }: any) {
+export default function EditPilot({ client }: any) {
 
     const { data, setData, patch, processing, errors } = useForm({
-        name: user.name,
-        email: user.email,
+        name: client.data.name,
+        email: client.data.email,
         password: ''
     });
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/clients/" + user.id);
+        patch("/clients/" + client.data.id);
     };
 
     return (

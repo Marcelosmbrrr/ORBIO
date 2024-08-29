@@ -40,7 +40,7 @@ class FlightPlanController extends Controller
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'flight-plans', (int) $page);
 
         return Inertia::render('Authenticated/FlightPlans/Index', [
-            'data' => new FlightPlanResource($data),
+            'pagination' => FlightPlanResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -107,20 +107,7 @@ class FlightPlanController extends Controller
         }
 
         return Inertia::render('Authenticated/FlightPlans/ShowFlightPlan', [
-            'flightplan' => [
-                'id' => $flight_plan->public_id,
-                'name' => $flight_plan->name,
-                'coordinates' => $flight_plan->coordinates,
-                'state' => $flight_plan->state,
-                'city' => $flight_plan->city,
-                'status' => [
-                    'title' => $flight_plan->trashed() ? 'Deletado' : 'Ativo',
-                    'style_key' => $flight_plan->trashed() ? 'deleted' : 'active',
-                ],
-                'created_at' => $flight_plan->created_at->format('d/m/Y'),
-                'updated_at' => $flight_plan->updated_at->format('d/m/Y'),
-                'deleted_at' => $flight_plan->deleted_at,
-            ],
+            'flightplan' => new FlightPlanResource($flight_plan)
         ]);
     }
 
@@ -180,10 +167,7 @@ class FlightPlanController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $flightplans = $this->model->whereIn('public_id', $ids)->get();
-            foreach ($flightplans as $flightplan) {
-                $flightplan->delete();
-            }
+            $this->model->whereIn('public_id', $ids)->delete();
         });
 
         return to_route('flight-plans.index')

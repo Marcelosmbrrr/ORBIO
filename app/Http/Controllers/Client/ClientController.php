@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Clients\CreateClientRequest;
 use App\Http\Requests\Clients\EditClientRequest;
-use App\Http\Resources\Users\UserResource;
+use App\Http\Resources\Users\ClientResource;
 use App\Models\User;
 use App\Notifications\EmailVerificationAfterUpdateNotification;
 use App\Notifications\EmailVerificationNotification;
@@ -41,7 +41,7 @@ class ClientController extends Controller
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'clients', (int) $page);
 
         return Inertia::render('Authenticated/Clients/Index', [
-            'data' => new UserResource($data),
+            'pagination' => ClientResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -58,20 +58,20 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->create([
+        $client = $this->model->create([
             ...$request->validated(),
             'role' => 'cliente',
             'tenant_id' => session('tenant_id'),
             'public_id' => Str::uuid(),
         ]);
 
-        $user->address()->create();
-        $user->document()->create();
-        $user->contact()->create();
+        $client->address()->create();
+        $client->document()->create();
+        $client->contact()->create();
 
-        $user->notify(new EmailVerificationNotification($request->password));
+        $client->notify(new EmailVerificationNotification($request->password));
 
-        return redirect()->route('clients.index', ['search' => $user->public_id->toString()])
+        return redirect()->route('clients.index', ['search' => $client->public_id->toString()])
             ->with('success', 'A criação do cliente foi bem sucedida');
     }
 
@@ -79,19 +79,10 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $client = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Clients/ShowClient', [
-            'user' => [
-                'id' => $user->public_id,
-                'name' => $user->name,
-                'role' => $user->role,
-                'email' => $user->email,
-                'status' => $user->trashed() ? 'Deletado' : ($user->status ? 'Ativo' : 'Inativo'),
-                'created_at' => $user->created_at->format('d/m/Y'),
-                'updated_at' => $user->updated_at->format('d/m/Y'),
-                'deleted_at' => $user->deleted_at,
-            ],
+            'client' => new ClientResource($client)
         ]);
     }
 
@@ -99,15 +90,10 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $client = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Clients/EditClient', [
-            'user' => [
-                'id' => $user->public_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
+            'client' => new ClientResource($client)
         ]);
     }
 
@@ -115,24 +101,24 @@ class ClientController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
-        $user->update($request->validated());
+        $client = $this->model->withTrashed()->where('public_id', $id)->first();
+        $client->update($request->validated());
 
-        $email_changed = $user->email !== $request->input('email');
+        $email_changed = $client->email !== $request->input('email');
 
-        $user->update($request->validated());
+        $client->update($request->validated());
 
         if ($email_changed) {
 
-            $user->update([
+            $client->update([
                 'email_verified_at' => null,
             ]);
 
-            $user->notify(new EmailVerificationAfterUpdateNotification);
+            $client->notify(new EmailVerificationAfterUpdateNotification);
 
         }
 
-        return redirect()->route('clients.index', ['search' => $user->public_id])
+        return redirect()->route('clients.index', ['search' => $client->public_id])
             ->with('success', 'A edição do cliente foi bem sucedida');
     }
 
@@ -143,10 +129,7 @@ class ClientController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $users = $this->model->whereIn('public_id', $ids)->get();
-            foreach ($users as $user) {
-                $user->delete();
-            }
+            $this->model->whereIn('public_id', $ids)->delete();
         });
 
         return to_route('clients.index')

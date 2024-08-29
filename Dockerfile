@@ -1,7 +1,7 @@
 FROM php:8.3-fpm
 
 # set your user name, ex: user=bernardo
-ARG user=carlos
+ARG user=orbio
 ARG uid=1000
 
 # Install system dependencies
@@ -25,7 +25,7 @@ RUN apt-get update && apt-get upgrade -y && \
     npm  
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets zip  # Adicione zip aqui
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets zip
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

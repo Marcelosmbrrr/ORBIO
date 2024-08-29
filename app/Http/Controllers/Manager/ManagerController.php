@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Manager;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Manager\CreateManagerRequest;
 use App\Http\Requests\Manager\EditManagerRequest;
-use App\Http\Resources\Users\UserResource;
+use App\Http\Resources\Users\ManagerResource;
 use App\Models\User;
 use App\Notifications\EmailVerificationAfterUpdateNotification;
 use App\Notifications\EmailVerificationNotification;
@@ -40,7 +40,7 @@ class ManagerController extends Controller
             ->paginate((int) $limit, ['*'], 'managers', (int) $page);
 
         return Inertia::render('Authenticated/Managers/Index', [
-            'data' => new UserResource($data),
+            'pagination' => ManagerResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -57,19 +57,19 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:write');
 
-        $user = $this->model->create([
+        $manager = $this->model->create([
             ...$request->validated(),
             'role' => 'gerente',
             'public_id' => Str::uuid(),
         ]);
 
-        $user->address()->create();
-        $user->document()->create();
-        $user->contact()->create();
+        $manager->address()->create();
+        $manager->document()->create();
+        $manager->contact()->create();
 
-        $user->notify(new EmailVerificationNotification($request->password));
+        $manager->notify(new EmailVerificationNotification($request->password));
 
-        return redirect()->route('managers.index', ['search' => $user->public_id])
+        return redirect()->route('managers.index', ['search' => $manager->public_id])
             ->with('success', 'A criação do gerente foi bem sucedida');
     }
 
@@ -77,19 +77,10 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:read');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $manager = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Managers/ShowManager', [
-            'manager' => [
-                'id' => $user->public_id,
-                'name' => $user->name,
-                'role' => $user->role,
-                'email' => $user->email,
-                'status' => $user->trashed() ? 'Deletado' : ($user->status ? 'Ativo' : 'Inativo'),
-                'created_at' => $user->created_at->format('d/m/Y'),
-                'updated_at' => $user->updated_at->format('d/m/Y'),
-                'deleted_at' => $user->deleted_at,
-            ],
+            'manager' => new ManagerResource($manager)
         ]);
     }
 
@@ -97,14 +88,10 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $manager = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Managers/EditManager', [
-            'manager' => [
-                'id' => $user->public_id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
+            'manager' => new ManagerResource($manager)
         ]);
     }
 
@@ -112,23 +99,23 @@ class ManagerController extends Controller
     {
         Gate::authorize('managers:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $manager = $this->model->withTrashed()->where('public_id', $id)->first();
 
-        $email_changed = $user->email !== $request->input('email');
+        $email_changed = $manager->email !== $request->input('email');
 
-        $user->update($request->validated());
+        $manager->update($request->validated());
 
         if ($email_changed) {
 
-            $user->update([
+            $manager->update([
                 'email_verified_at' => null,
             ]);
 
-            $user->notify(new EmailVerificationAfterUpdateNotification);
+            $manager->notify(new EmailVerificationAfterUpdateNotification);
 
         }
 
-        return redirect()->route('managers.index', ['search' => $user->public_id])
+        return redirect()->route('managers.index', ['search' => $manager->public_id])
             ->with('success', 'A edição do gerente foi bem sucedida');
     }
 

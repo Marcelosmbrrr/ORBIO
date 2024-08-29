@@ -5,18 +5,18 @@ import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 export default function EditEquipment({ equipment }: any) {
 
     const { data, setData, patch, processing, errors } = useForm({
-        name: equipment.name,
-        manufacturer: equipment.manufacturer,
-        model: equipment.model,
-        record_number: equipment.record_number,
-        serial_number: equipment.serial_number,
-        weight: equipment.weight,
-        image: equipment.image_url,
+        name: equipment.data.name,
+        manufacturer: equipment.data.manufacturer,
+        model: equipment.data.model,
+        record_number: equipment.data.record_number,
+        serial_number: equipment.data.serial_number,
+        weight: equipment.data.weight,
+        image: equipment.data.image_url,
     });
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/equipments/" + equipment.id);
+        patch("/equipments/" + equipment.data.id);
     };
 
     function onChangeImage(e: any) {

@@ -36,7 +36,7 @@ class ReportController extends Controller
 
         return Inertia::render('Authenticated/Reports/CreateReport', [
             'service_order' => new CreateReportResource($service_order),
-            'logs' => fn () => new LogResource(
+            'logs' => fn () => LogResource::collection(
                 $this->logModel
                     ->where('service_order_id', $service_order->id)
                     ->search($search)

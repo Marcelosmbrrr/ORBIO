@@ -1,60 +1,107 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Carbon;
 
-test('reset password link screen can be rendered', function () {
-    $response = $this->get('/forgot-password');
+it('displays the password reset view', function () {
 
-    $response->assertStatus(200);
+    $token = 'some-valid-token';
+    $email = 'test@example.com';
+
+    $this->get(route('password.reset', ['token' => $token, 'email' => $email]))
+        ->assertStatus(200);
 });
 
-test('reset password link can be requested', function () {
-    Notification::fake();
+it('resets the password successfully', function () {
 
-    $user = User::factory()->create();
+    Event::fake();
 
-    $this->post('/forgot-password', ['email' => $user->email]);
+    $user = User::factory()->admin()->verified()->create();
 
-    Notification::assertSentTo($user, ResetPassword::class);
+    $token = Password::createToken($user);
+
+    $this->post(route('password.store'), [
+        'token' => $token,
+        'email' => $user->email,
+        'password' => 'new-password',
+        'password_confirmation' => 'new-password',
+    ])
+    ->assertStatus(302)
+    ->assertSessionHas('status', trans(Password::PASSWORD_RESET));
+
+    $this->assertTrue(Hash::check('new-password', $user->fresh()->password));
+
+    Event::assertDispatched(PasswordReset::class);
 });
 
-test('reset password screen can be rendered', function () {
-    Notification::fake();
+it('fails to reset the password with invalid data', function () {
 
-    $user = User::factory()->create();
-
-    $this->post('/forgot-password', ['email' => $user->email]);
-
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-        $response = $this->get('/reset-password/'.$notification->token);
-
-        $response->assertStatus(200);
-
-        return true;
-    });
+    $this->post(route('password.store'), [
+        'token' => 'invalid-token',
+        'email' => 'invalid-email',
+        'password' => 'short',
+        'password_confirmation' => 'different',
+    ])
+    ->assertStatus(302)
+    ->assertSessionHasErrors(['email', 'password']);
 });
 
-test('password can be reset with valid token', function () {
-    Notification::fake();
+it('fails to reset the password if token is expired', function () {
 
-    $user = User::factory()->create();
+    Event::fake();
 
-    $this->post('/forgot-password', ['email' => $user->email]);
+    $user = User::factory()->admin()->verified()->create();
 
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-        $response = $this->post('/reset-password', [
-            'token' => $notification->token,
-            'email' => $user->email,
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
+    $token = Password::createToken($user);
 
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect(route('login'));
+    // Advances time by more than 60 minutes (default time to expiration)
+    Carbon::setTestNow(Carbon::now()->addMinutes(61));
 
-        return true;
-    });
+    // Tries to redefine the password with the expired token
+    $this->post(route('password.store'), [
+        'token' => $token,
+        'email' => $user->email,
+        'password' => 'new-password',
+        'password_confirmation' => 'new-password',
+    ])
+    ->assertStatus(302)
+    ->assertSessionHasErrors(['email' => trans(Password::INVALID_TOKEN)]);
 });
+
+it('fails to reset the password if the token has already been used', function () {
+
+    Event::fake();
+
+    $user = User::factory()->admin()->verified()->create();
+
+    $token = Password::createToken($user);
+
+    // Simulates the first password reset, which should succeed
+    $this->post(route('password.store'), [
+        'token' => $token,
+        'email' => $user->email,
+        'password' => 'new-password',
+        'password_confirmation' => 'new-password',
+    ])
+    ->assertStatus(302)
+    ->assertSessionHas('status', trans(Password::PASSWORD_RESET));
+
+    // Checks if the password reset event has been triggered
+    Event::assertDispatched(PasswordReset::class);
+
+    // Tries to reset the password again with the same token, which should fail
+    $this->post(route('password.store'), [
+        'token' => $token,
+        'email' => $user->email,
+        'password' => 'another-password',
+        'password_confirmation' => 'another-password',
+    ])
+    ->assertStatus(302)
+    ->assertSessionHasErrors(['email' => trans(Password::INVALID_TOKEN)]);
+});
+
+

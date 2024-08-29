@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Pilot;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Pilots\CreatePilotRequest;
 use App\Http\Requests\Pilots\EditPilotRequest;
-use App\Http\Resources\Users\UserResource;
+use App\Http\Resources\Users\PilotResource;
 use App\Models\User;
 use App\Notifications\EmailVerificationAfterUpdateNotification;
 use App\Notifications\EmailVerificationNotification;
@@ -41,7 +41,7 @@ class PilotController extends Controller
             ->paginate((int) $limit, $columns = ['*'], $pageName = 'pilots', (int) $page);
 
         return Inertia::render('Authenticated/Pilots/Index', [
-            'data' => new UserResource($data),
+            'pagination' => PilotResource::collection($data),
             'queryParams' => request()->query() ?: null,
             'success' => session('success'),
         ]);
@@ -58,20 +58,20 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->create([
+        $pilot = $this->model->create([
             ...$request->validated(),
             'role' => 'piloto',
             'tenant_id' => session('tenant_id'),
             'public_id' => Str::uuid(),
         ]);
 
-        $user->address()->create();
-        $user->document()->create();
-        $user->contact()->create();
+        $pilot->address()->create();
+        $pilot->document()->create();
+        $pilot->contact()->create();
 
-        $user->notify(new EmailVerificationNotification($request->password));
+        $pilot->notify(new EmailVerificationNotification($request->password));
 
-        return redirect()->route('pilots.index', ['search' => $user->public_id->toString()])
+        return redirect()->route('pilots.index', ['search' => $pilot->public_id->toString()])
             ->with('success', 'A criação do piloto foi bem sucedida');
     }
 
@@ -79,19 +79,10 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Pilots/ShowPilot', [
-            'user' => [
-                'id' => $user->public_id,
-                'name' => $user->name,
-                'role' => $user->role,
-                'email' => $user->email,
-                'status' => $user->trashed() ? 'Deletado' : ($user->status ? 'Ativo' : 'Inativo'),
-                'created_at' => $user->created_at->format('d/m/Y'),
-                'updated_at' => $user->updated_at->format('d/m/Y'),
-                'deleted_at' => $user->deleted_at,
-            ],
+            'pilot' => new PilotResource($pilot),
         ]);
     }
 
@@ -99,15 +90,10 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
+        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
 
         return Inertia::render('Authenticated/Pilots/EditPilot', [
-            'user' => [
-                'id' => $user->public_id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role,
-            ],
+            'pilot' => new PilotResource($pilot),
         ]);
     }
 
@@ -115,24 +101,24 @@ class PilotController extends Controller
     {
         Gate::authorize('pilots-clients:write');
 
-        $user = $this->model->withTrashed()->where('public_id', $id)->first();
-        $user->update($request->validated());
+        $pilot = $this->model->withTrashed()->where('public_id', $id)->first();
+        $pilot->update($request->validated());
 
-        $email_changed = $user->email !== $request->input('email');
+        $email_changed = $pilot->email !== $request->input('email');
 
-        $user->update($request->validated());
+        $pilot->update($request->validated());
 
         if ($email_changed) {
 
-            $user->update([
+            $pilot->update([
                 'email_verified_at' => null,
             ]);
 
-            $user->notify(new EmailVerificationAfterUpdateNotification);
+            $pilot->notify(new EmailVerificationAfterUpdateNotification);
 
         }
 
-        return redirect()->route('pilots.index', ['search' => $user->public_id])
+        return redirect()->route('pilots.index', ['search' => $pilot->public_id])
             ->with('success', 'A edição do piloto foi bem sucedida');
     }
 
@@ -143,10 +129,7 @@ class PilotController extends Controller
         $ids = explode(',', request('ids'));
 
         DB::transaction(function () use ($ids) {
-            $users = $this->model->whereIn('public_id', $ids)->get();
-            foreach ($users as $user) {
-                $user->delete();
-            }
+            $this->model->whereIn('public_id', $ids)->delete();
         });
 
         return to_route('pilots.index')

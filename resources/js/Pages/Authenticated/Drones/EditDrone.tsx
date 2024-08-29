@@ -5,18 +5,18 @@ import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
 export default function EditDrone({ drone }: any) {
 
     const { data, setData, patch, processing, errors } = useForm({
-        name: drone.name,
-        manufacturer: drone.manufacturer,
-        model: drone.model,
-        record_number: drone.record_number,
-        serial_number: drone.serial_number,
-        weight: drone.weight,
-        image: drone.image_url,
+        name: drone.data.name,
+        manufacturer: drone.data.manufacturer,
+        model: drone.data.model,
+        record_number: drone.data.record_number,
+        serial_number: drone.data.serial_number,
+        weight: drone.data.weight,
+        image: drone.data.image_url,
     });
 
     const submit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        patch("/drones/" + drone.id);
+        patch("/drones/" + drone.data.id);
     };
 
     function onChangeImage(e: any) {
