@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3"
 
 services:
     # App
@@ -15,7 +15,7 @@ services:
         networks:
             - orbio
 
-    # Nginx
+    # nginx
     nginx:
         image: nginx:alpine
         restart: unless-stopped
@@ -27,7 +27,7 @@ services:
         networks:
             - orbio
 
-    # Database
+    # MySQL
     db:
         image: mysql:5.7.22
         restart: unless-stopped
@@ -39,24 +39,49 @@ services:
         volumes:
             - ./.docker/mysql/dbdata:/var/lib/mysql
         ports:
-            - "3307:3306"
+            - 3307:3306
+        networks:
+            - orbio
+
+    # PHPMyAdmin
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        platform: linux/x86_64
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        environment:
+            PMA_HOST: db
+            PMA_PORT: 3306
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+        networks:
+            - orbio
+
+    # MailHog
+    mailhog:
+        image: mailhog/mailhog
+        logging:
+            driver: "none" # disable saving logs
+        ports:
+            - "1025:1025" # smtp server
+            - "8025:8025" # web ui
         networks:
             - orbio
 
     # Queue
-    # queue:
-    #     build:
-    #         context: ./
-    #         dockerfile: Dockerfile
-    #     restart: unless-stopped
-    #     command: "php artisan queue:work"
-    #     volumes:
-    #         - ./:/var/www
-    #     depends_on:
-    #         - redis
-    #         - app
-    #     networks:
-    #         - orbio
+    queue:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        restart: unless-stopped
+        command: "php artisan queue:work"
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - redis
+            - app
+        networks:
+            - orbio
 
     # Redis
     redis:
