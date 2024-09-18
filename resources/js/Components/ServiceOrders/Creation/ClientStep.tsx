@@ -4,10 +4,10 @@ import { router, usePage } from "@inertiajs/react";
 import { Input } from "@/Components/Shared/Input/Input";
 import { Button } from "@/Components/Shared/Buttons/Button";
 import { PlusIcon } from "@/Components/Shared/Icons/PlusIcon";
-import { LimitSelector } from "@/Components/Shared/Pagination/LimitSelector";
-import { Paginator } from "@/Components/Shared/Pagination/Paginator";
-import { PaginationInfo } from "@/Components/Shared/Pagination/PaginationInfo";
-import { FilterSelector } from "@/Components/Shared/Pagination/FilterSelector";
+import { LimitSelector } from "@/Components/Shared/Table/LimitSelector";
+import { Paginator } from "@/Components/Shared/Table/Paginator";
+import { PaginationInfo } from "@/Components/Shared/Table/PaginationInfo";
+import { FilterSelector } from "@/Components/Shared/Table/FilterSelector";
 
 type QueryParams = {
     page: number;
@@ -145,7 +145,7 @@ export const ClientStep: React.FC<{
                 labels={{
                     all: "Todos",
                     verified: "Verificados",
-                    unverified: "Não Verificados"
+                    unverified: "Não Verificados",
                 }}
             />
             <ClientsTable

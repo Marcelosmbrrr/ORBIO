@@ -3,12 +3,12 @@ import { router, usePage } from "@inertiajs/react";
 // Custom
 import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
 import { Button } from "@/Components/Shared/Buttons/Button";
-import { Paginator } from "@/Components/Shared/Pagination/Paginator";
-import { PaginationInfo } from "@/Components/Shared/Pagination/PaginationInfo";
-import { FilterSelector } from "@/Components/Shared/Pagination/FilterSelector";
+import { Paginator } from "@/Components/Shared/Table/Paginator";
+import { PaginationInfo } from "@/Components/Shared/Table/PaginationInfo";
+import { FilterSelector } from "@/Components/Shared/Table/FilterSelector";
 import { DeleteOrUndeleteResource } from "@/Components/Shared/Modal/DeleteOrUndeleteResource";
-import { LimitSelector } from "@/Components/Shared/Pagination/LimitSelector";
-import { OrderSelector } from "@/Components/Shared/Pagination/OrderSelector";
+import { LimitSelector } from "@/Components/Shared/Table/LimitSelector";
+import { OrderSelector } from "@/Components/Shared/Table/OrderSelector";
 import { Alert } from "@/Components/Shared/Alert/Alert";
 import { Breadcrumb } from "@/Components/Shared/Breadcrumb/Breadcrumb";
 import { Input } from "@/Components/Shared/Input/Input";
@@ -16,8 +16,11 @@ import { PlusIcon } from "@/Components/Shared/Icons/PlusIcon";
 import { IconButton } from "@/Components/Shared/Buttons/IconButton";
 import { PenIcon } from "@/Components/Shared/Icons/PenIcon";
 import { EyeIcon } from "@/Components/Shared/Icons/EyeIcon";
+import { DownloadFileIcon } from "@/Components/Shared/Icons/DownloadFileIcon";
 // Types
 import { EquipmentSelected, EquipmentRecord } from "./types";
+// Utils
+import { exportDataAsCsv } from "@/Utils/ExportDataAsCsv";
 
 type QueryParams = {
     page: number;
@@ -100,6 +103,15 @@ export default function Equipments() {
         auth.user.authorization.equipments.write &&
         selections.every((sel) => sel.is_deleted === selections[0].is_deleted);
 
+    function handleExportTableData() {
+        exportDataAsCsv("equipamentos", pagination.data, {
+            status: {
+                is_object: true,
+                get: "title",
+            },
+        });
+    }
+
     return (
         <AuthenticatedLayout>
             <div className="flex flex-col h-full">
@@ -129,6 +141,7 @@ export default function Equipments() {
                             selections={selections}
                             reload={handleNavigation}
                             currentParams={currentParams}
+                            handleExportTableData={handleExportTableData}
                         />
                     </div>
                     <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
@@ -170,6 +183,7 @@ const ActionButtons = ({
     selections,
     reload,
     currentParams,
+    handleExportTableData,
 }: any) => (
     <div className="flex justify-start md:justify-end flex-shrink-0 w-full md:w-auto md:flex-row md:space-y-0 md:items-center space-x-1">
         {canCreate && (
@@ -215,6 +229,13 @@ const ActionButtons = ({
                 { id: "weight", name: "peso" },
             ]}
             changeOrderBy={(order_by: string) => reload({ order_by })}
+        />
+        <Button
+            type="button"
+            text="Exportar"
+            icon={DownloadFileIcon}
+            onClick={() => handleExportTableData()}
+            processing={false}
         />
     </div>
 );

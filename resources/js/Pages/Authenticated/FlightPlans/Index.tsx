@@ -4,12 +4,12 @@ import { router, usePage } from "@inertiajs/react";
 // Custom
 import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
 import { Button } from "@/Components/Shared/Buttons/Button";
-import { Paginator } from "@/Components/Shared/Pagination/Paginator";
-import { PaginationInfo } from "@/Components/Shared/Pagination/PaginationInfo";
-import { FilterSelector } from "@/Components/Shared/Pagination/FilterSelector";
+import { Paginator } from "@/Components/Shared/Table/Paginator";
+import { PaginationInfo } from "@/Components/Shared/Table/PaginationInfo";
+import { FilterSelector } from "@/Components/Shared/Table/FilterSelector";
 import { DeleteOrUndeleteResource } from "@/Components/Shared/Modal/DeleteOrUndeleteResource";
-import { LimitSelector } from "@/Components/Shared/Pagination/LimitSelector";
-import { OrderSelector } from "@/Components/Shared/Pagination/OrderSelector";
+import { LimitSelector } from "@/Components/Shared/Table/LimitSelector";
+import { OrderSelector } from "@/Components/Shared/Table/OrderSelector";
 import { Alert } from "@/Components/Shared/Alert/Alert";
 import { Breadcrumb } from "@/Components/Shared/Breadcrumb/Breadcrumb";
 import { Input } from "@/Components/Shared/Input/Input";
@@ -18,8 +18,11 @@ import { IconButton } from "@/Components/Shared/Buttons/IconButton";
 import { PenIcon } from "@/Components/Shared/Icons/PenIcon";
 import { EyeIcon } from "@/Components/Shared/Icons/EyeIcon";
 import { ExportFileIcon } from "@/Components/Shared/Icons/ExportFileIcon";
+import { DownloadFileIcon } from "@/Components/Shared/Icons/DownloadFileIcon";
 // Types
 import { FlightPlanSelected, FlightPlanRecord } from "./types";
+// Utils
+import { exportDataAsCsv } from "@/Utils/ExportDataAsCsv";
 
 type QueryParams = {
     page: number;
@@ -104,7 +107,7 @@ export default function FlightPlans() {
         auth.user.authorization.flightplans.write &&
         selections.every((sel) => sel.is_deleted === selections[0].is_deleted);
 
-    const handleExport = (
+    const handleExportFlightPlan = (
         name: string,
         { single, multi }: { single: string; multi: string[] }
     ) => {
@@ -126,6 +129,15 @@ export default function FlightPlans() {
             link.click();
         });
     };
+
+    function handleExportTableData() {
+        exportDataAsCsv("planos-de-voo", pagination.data, {
+            status: {
+                is_object: true,
+                get: "title",
+            },
+        });
+    }
 
     return (
         <AuthenticatedLayout>
@@ -156,6 +168,7 @@ export default function FlightPlans() {
                             selections={selections}
                             reload={handleNavigation}
                             currentParams={currentParams}
+                            handleExportTableData={handleExportTableData}
                         />
                     </div>
                     <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
@@ -175,7 +188,7 @@ export default function FlightPlans() {
                         flightplans={flightplans}
                         isSelected={isSelected}
                         toggleSelection={toggleSelection}
-                        handleExport={handleExport}
+                        handleExportFlightPlan={handleExportFlightPlan}
                         canEdit={auth.user.authorization.flightplans.write}
                     />
                     <PaginationInfo meta={meta} />
@@ -198,6 +211,7 @@ const ActionButtons = ({
     selections,
     reload,
     currentParams,
+    handleExportTableData,
 }: any) => (
     <div className="flex justify-start md:justify-end flex-shrink-0 w-full md:w-auto md:flex-row md:space-y-0 md:items-center space-x-1">
         {canCreate && (
@@ -241,6 +255,13 @@ const ActionButtons = ({
             ]}
             changeOrderBy={(order_by: string) => reload({ order_by })}
         />
+        <Button
+            type="button"
+            text="Exportar"
+            icon={DownloadFileIcon}
+            onClick={() => handleExportTableData()}
+            processing={false}
+        />
     </div>
 );
 
@@ -248,7 +269,7 @@ const FlightPlanTable = ({
     flightplans,
     isSelected,
     toggleSelection,
-    handleExport,
+    handleExportFlightPlan,
     canEdit,
 }: any) => (
     <div className="mt-2 overflow-x-auto sm:rounded-lg">
@@ -333,9 +354,7 @@ const FlightPlanTable = ({
                                         flightplan.id
                                     )}
                                 >
-                                    <IconButton
-                                        icon={PenIcon}
-                                    />
+                                    <IconButton icon={PenIcon} />
                                 </a>
                                 <IconButton
                                     icon={EyeIcon}
@@ -351,7 +370,7 @@ const FlightPlanTable = ({
                                 <IconButton
                                     icon={ExportFileIcon}
                                     onClick={() =>
-                                        handleExport(
+                                        handleExportFlightPlan(
                                             flightplan.name,
                                             flightplan.file
                                         )

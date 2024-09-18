@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { PencilSquareIcon } from '@heroicons/react/24/solid';
 
 interface Props {

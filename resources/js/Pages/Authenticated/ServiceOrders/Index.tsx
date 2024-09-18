@@ -5,16 +5,19 @@ import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
 import { Input } from "@/Components/Shared/Input/Input";
 import { Breadcrumb } from "@/Components/Shared/Breadcrumb/Breadcrumb";
 import { Button } from "@/Components/Shared/Buttons/Button";
-import { Paginator } from "@/Components/Shared/Pagination/Paginator";
-import { PaginationInfo } from "@/Components/Shared/Pagination/PaginationInfo";
-import { FilterSelector } from "@/Components/Shared/Pagination/FilterSelector";
+import { Paginator } from "@/Components/Shared/Table/Paginator";
+import { PaginationInfo } from "@/Components/Shared/Table/PaginationInfo";
+import { FilterSelector } from "@/Components/Shared/Table/FilterSelector";
 import { ShowServiceOrder } from "@/Components/ServiceOrders/ShowServiceOrder";
-import { LimitSelector } from "@/Components/Shared/Pagination/LimitSelector";
-import { OrderSelector } from "@/Components/Shared/Pagination/OrderSelector";
+import { LimitSelector } from "@/Components/Shared/Table/LimitSelector";
+import { OrderSelector } from "@/Components/Shared/Table/OrderSelector";
 import { Alert } from "@/Components/Shared/Alert/Alert";
 import { PlusIcon } from "@/Components/Shared/Icons/PlusIcon";
+import { DownloadFileIcon } from "@/Components/Shared/Icons/DownloadFileIcon";
 // Types
 import { ServiceOrderRecord } from "./types";
+// Utils
+import { exportDataAsCsv } from "@/Utils/ExportDataAsCsv";
 
 type QueryParams = {
     page: number;
@@ -68,6 +71,15 @@ export default function ServiceOrders() {
         [search]
     );
 
+    function handleExportTableData() {
+        exportDataAsCsv("ordens-de-serviço", pagination.data, {
+            status: {
+                is_object: true,
+                get: "title",
+            },
+        });
+    }
+
     return (
         <AuthenticatedLayout>
             <div className="flex flex-col h-full">
@@ -94,6 +106,7 @@ export default function ServiceOrders() {
                             }
                             reload={handleNavigation}
                             currentParams={currentParams}
+                            handleExportTableData={handleExportTableData}
                         />
                     </div>
                     <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
@@ -137,7 +150,12 @@ export default function ServiceOrders() {
     );
 }
 
-const ActionButtons = ({ canCreate, reload, currentParams }: any) => (
+const ActionButtons = ({
+    canCreate,
+    reload,
+    currentParams,
+    handleExportTableData,
+}: any) => (
     <div className="flex justify-start md:justify-end flex-shrink-0 w-full md:w-auto md:flex-row md:space-y-0 md:items-center space-x-1">
         {canCreate && (
             <Button
@@ -159,6 +177,13 @@ const ActionButtons = ({ canCreate, reload, currentParams }: any) => (
                 { id: "name", name: "nome" },
             ]}
             changeOrderBy={(order_by: string) => reload({ order_by })}
+        />
+        <Button
+            type="button"
+            text="Exportar"
+            icon={DownloadFileIcon}
+            onClick={() => handleExportTableData()}
+            processing={false}
         />
     </div>
 );

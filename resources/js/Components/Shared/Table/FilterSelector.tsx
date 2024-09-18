@@ -31,7 +31,7 @@ export const FilterSelector = ({
                         />
                         <label
                             htmlFor={`inline-${option}-radio`}
-                            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            className="ms-2 text-sm text-gray-900 dark:text-gray-300"
                         >
                             {labels[option]}
                         </label>

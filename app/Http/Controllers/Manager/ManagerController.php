@@ -69,7 +69,7 @@ class ManagerController extends Controller
 
         $manager->notify(new EmailVerificationNotification($request->password));
 
-        return redirect()->route('managers.index', ['search' => $manager->public_id->toString()])
+        return redirect()->route('managers.index', ['search' => (string) $manager->public_id])
             ->with('success', 'A criação do gerente foi bem sucedida');
     }
 
