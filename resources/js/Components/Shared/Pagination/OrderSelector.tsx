@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
-import { ChevronDownIcon, CheckIcon, FunnelIcon } from '@heroicons/react/16/solid'
+import { ChevronDownIcon, CheckIcon } from '@heroicons/react/16/solid'
+import { OrderIcon } from '../Icons/OrderIcon'
 
 interface Option {
     id: string;
@@ -26,9 +27,9 @@ export const OrderSelector = React.memo((props: Props) => {
 
     return (
         <Menu>
-            <MenuButton className="inline-flex items-center gap-2 rounded-md bg-green-600 hover:bg-green-700 py-2 px-4 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-green-700 data-[open]:bg-green-700 data-[focus]:outline-1 data-[focus]:outline-white">
-                <FunnelIcon className="size-4 fill-white" />
-                Ordem:
+            <MenuButton className="flex items-center gap-2 focus:outline-none text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                <OrderIcon className="size-4 fill-white" />
+                Ordem
                 <ChevronDownIcon className="size-4 fill-white/60" />
             </MenuButton>
             <Transition

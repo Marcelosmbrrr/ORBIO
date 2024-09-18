@@ -1,6 +1,12 @@
 import * as React from "react";
-import { useForm, Link } from "@inertiajs/react";
+import { useForm, Link, router } from "@inertiajs/react";
+// Custom
 import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
+import { InertiaInput } from "@/Components/Shared/Input/InertiaInput";
+import { InputLabel } from "@/Components/Shared/Label/InputLabel";
+import { InputError } from "@/Components/Shared/Input/InputError";
+import { Breadcrumb } from "@/Components/Shared/Breadcrumb/Breadcrumb";
+import { Button } from "@/Components/Shared/Buttons/Button";
 
 export default function EditTenant({ manager }: any) {
     const { data, setData, patch, processing, errors } = useForm({
@@ -16,68 +22,7 @@ export default function EditTenant({ manager }: any) {
 
     return (
         <AuthenticatedLayout>
-            <ol className="flex items-center whitespace-nowrap">
-                <li className="inline-flex items-center">
-                    <a className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                        <svg
-                            className="flex-shrink-0 me-3 size-4"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        Home
-                    </a>
-                    <svg
-                        className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <path d="m9 18 6-6-6-6"></path>
-                    </svg>
-                </li>
-                <li className="inline-flex items-center">
-                    <span className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                        Gerentes
-                        <svg
-                            className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                    </span>
-                </li>
-                <li
-                    className="inline-flex items-center text-sm font-semibold text-gray-800 dark:text-white truncate"
-                    aria-current="page"
-                >
-                    Editar
-                </li>
-            </ol>
-
+            <Breadcrumb items={["Gerentes", "Editar"]} />
             <section>
                 <div className="py-8 mx-auto max-w-7xl lg:py-16">
                     <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
@@ -86,95 +31,62 @@ export default function EditTenant({ manager }: any) {
                     <form onSubmit={submit}>
                         <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                             <div className="sm:col-span-2">
-                                <label
-                                    htmlFor="name"
-                                    className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                >
-                                    Nome
-                                </label>
-                                <input
+                                <InputLabel htmlFor="name" text="Nome" />
+                                <InertiaInput
                                     type="text"
                                     value={data.name}
-                                    onChange={(e) =>
-                                        setData("name", e.target.value)
-                                    }
+                                    name="name"
+                                    onChange={setData}
                                     id="name"
-                                    className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
                                     placeholder="Informe o nome completo"
                                 />
-                                <span className="text-red-500 text-sm">
-                                    {errors.name}
-                                </span>
+                                <InputError text={errors.name} />
                             </div>
                             <div className="sm:col-span-2">
-                                <div className="mb-2">
-                                    <label
-                                        htmlFor="email"
-                                        className="block text-sm font-medium text-gray-900 dark:text-white"
-                                    >
-                                        E-mail
-                                    </label>
-                                    <span className="text-gray-400 text-sm">
-                                        O usuário terá que confirmar o e-mail
-                                        novamente.
-                                    </span>
-                                </div>
-                                <input
+                                <InputLabel
+                                    htmlFor="email"
+                                    text="E-mail"
+                                    hint="O usuário terá que confirmar o e-mail novamente."
+                                />
+                                <InertiaInput
                                     type="text"
                                     value={data.email}
-                                    onChange={(e) =>
-                                        setData("email", e.target.value)
-                                    }
+                                    name="email"
+                                    onChange={setData}
                                     id="email"
-                                    className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
-                                    placeholder="Informe o e-mail"
+                                    placeholder="Informe o email"
                                 />
-                                <span className="text-red-500 text-sm">
-                                    {errors.email}
-                                </span>
+                                <InputError text={errors.email} />
                             </div>
                             <div className="sm:col-span-2">
-                                <div className="mb-2">
-                                    <label
-                                        htmlFor="password"
-                                        className="block text-sm font-medium text-gray-900 dark:text-white"
-                                    >
-                                        Senha (opcional)
-                                    </label>
-                                    <span className="text-gray-400 text-sm">
-                                        A senha pode ser informada ou gerada
-                                        automaticamente.
-                                    </span>
-                                </div>
-                                <input
-                                    type="text"
+                                <InputLabel
+                                    htmlFor="password"
+                                    text="Senha (opcional)"
+                                />
+                                <InertiaInput
+                                    type="password"
                                     value={data.password}
-                                    onChange={(e) =>
-                                        setData("password", e.target.value)
-                                    }
-                                    id="name"
-                                    className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
+                                    name="password"
+                                    onChange={setData}
+                                    id="password"
                                     placeholder="Informe a senha"
                                 />
-                                <span className="text-red-500 text-sm">
-                                    {errors.password}
-                                </span>
+                                <InputError text={errors.password} />
                             </div>
                         </div>
-                        <div className="flex justify-end py-3">
-                            <Link
-                                href={route("managers.index")}
-                                className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                            >
-                                Voltar
-                            </Link>
-                            <button
-                                disabled={processing}
+                        <div className="flex justify-end gap-1 mt-3">
+                            <Button
+                                type="button"
+                                text="Voltar"
+                                onClick={() =>
+                                    router.get(route("managers.index"))
+                                }
+                            />
+                            <Button
+                                processing={processing}
                                 type="submit"
-                                className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                            >
-                                {processing ? "Carregando ..." : "Confirmar"}
-                            </button>
+                                text="Confirmar"
+                            />
                         </div>
                     </form>
                 </div>

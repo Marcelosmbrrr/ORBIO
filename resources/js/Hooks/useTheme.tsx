@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { SunIcon } from '@heroicons/react/24/solid';
-import { MoonIcon } from '@heroicons/react/24/solid';
+import { SunIcon } from '@/Components/Shared/Icons/SunIcon';
+import { MoonIcon } from '@/Components/Shared/Icons/MoonIcon';
 
 export function useTheme() {
 

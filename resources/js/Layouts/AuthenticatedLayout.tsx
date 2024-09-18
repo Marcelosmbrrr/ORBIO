@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { PropsWithChildren } from 'react';
 import { Head } from '@inertiajs/react';
-import { Sidebar } from '@/Components/Sidebar';
+import { Sidebar } from '@/Components/Shared/Sidebar/Sidebar';
 import { usePage } from '@inertiajs/react';
 import { useTheme } from '@/Hooks/useTheme';
 

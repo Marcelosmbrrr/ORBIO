@@ -3,14 +3,21 @@ import JSZip from "jszip";
 import { router, usePage } from "@inertiajs/react";
 // Custom
 import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
-import { CreateFlightPlan } from "@/Components/FlightPlans/CreateFlightPlan";
-import { EditFlightPlan } from "@/Components/FlightPlans/EditFlightPlan";
-import { ShowFlightPlan } from "@/Components/FlightPlans/ShowFlightPlan";
-import { ExportFlightPlan } from "@/Components/FlightPlans/ExportFlightPlan";
+import { Button } from "@/Components/Shared/Buttons/Button";
+import { Paginator } from "@/Components/Shared/Pagination/Paginator";
+import { PaginationInfo } from "@/Components/Shared/Pagination/PaginationInfo";
+import { FilterSelector } from "@/Components/Shared/Pagination/FilterSelector";
 import { DeleteOrUndeleteResource } from "@/Components/Shared/Modal/DeleteOrUndeleteResource";
 import { LimitSelector } from "@/Components/Shared/Pagination/LimitSelector";
 import { OrderSelector } from "@/Components/Shared/Pagination/OrderSelector";
-import { Alert } from "@/Components/Alert";
+import { Alert } from "@/Components/Shared/Alert/Alert";
+import { Breadcrumb } from "@/Components/Shared/Breadcrumb/Breadcrumb";
+import { Input } from "@/Components/Shared/Input/Input";
+import { PlusIcon } from "@/Components/Shared/Icons/PlusIcon";
+import { IconButton } from "@/Components/Shared/Buttons/IconButton";
+import { PenIcon } from "@/Components/Shared/Icons/PenIcon";
+import { EyeIcon } from "@/Components/Shared/Icons/EyeIcon";
+import { ExportFileIcon } from "@/Components/Shared/Icons/ExportFileIcon";
 // Types
 import { FlightPlanSelected, FlightPlanRecord } from "./types";
 
@@ -21,6 +28,7 @@ type QueryParams = {
     limit: string;
     group: "all" | "active" | "deleted";
 };
+
 const defaultParams: QueryParams = {
     page: 1,
     search: "",
@@ -49,7 +57,7 @@ export default function FlightPlans() {
     const [selections, setSelections] = React.useState<FlightPlanSelected[]>(
         []
     );
-    const [search, setSearch] = React.useState<string>("");
+    const [search, setSearch] = React.useState<string>(currentParams.search);
 
     const handleNavigation = React.useCallback(
         (params: Partial<QueryParams>) => {
@@ -122,15 +130,23 @@ export default function FlightPlans() {
     return (
         <AuthenticatedLayout>
             <div className="flex flex-col h-full">
-                <Breadcrumb />
+                <Breadcrumb items={["Planos de Voo"]} />
                 <div className="grow py-5 rounded">
-                    {success && <Alert type="success" message={success} />}
+                    <div className="max-w-md">
+                        {success && <Alert type="success" message={success} />}
+                    </div>
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-                        <SearchInput
-                            value={search}
-                            onChange={setSearch}
-                            onSubmit={handleSearchSubmit}
-                        />
+                        <div className="w-full md:w-1/2">
+                            <Input
+                                type={"search"}
+                                value={search}
+                                onChange={setSearch}
+                                onKeyDown={handleSearchSubmit}
+                                id={"search-manager"}
+                                name={"search"}
+                                placeholder={"Pesquisar"}
+                            />
+                        </div>
                         <ActionButtons
                             canCreate={
                                 selections.length === 0 &&
@@ -143,11 +159,17 @@ export default function FlightPlans() {
                         />
                     </div>
                     <hr className="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700" />
-                    <FilterGroup
+                    <FilterSelector
                         currentGroup={currentParams.group}
                         onChange={(group: "all" | "active" | "deleted") =>
                             handleNavigation({ group, page: 1 })
                         }
+                        options={["all", "active", "deleted"]}
+                        labels={{
+                            all: "Todos",
+                            active: "Ativos",
+                            deleted: "Deletados",
+                        }}
                     />
                     <FlightPlanTable
                         flightplans={flightplans}
@@ -170,79 +192,6 @@ export default function FlightPlans() {
     );
 }
 
-const Breadcrumb = () => (
-    <ol className="flex items-center whitespace-nowrap">
-        <li className="inline-flex items-center">
-            <span className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                <svg
-                    className="flex-shrink-0 me-3 size-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                >
-                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-                Home
-            </span>
-            <svg
-                className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-            >
-                <path d="m9 18 6-6-6-6"></path>
-            </svg>
-        </li>
-        <li
-            className="inline-flex items-center text-sm font-semibold text-gray-800 dark:text-white truncate"
-            aria-current="page"
-        >
-            Planos de voo
-        </li>
-    </ol>
-);
-
-const SearchInput = ({
-    value,
-    onChange,
-    onSubmit,
-}: {
-    value: string;
-    onChange: (value: string) => void;
-    onSubmit: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-}) => (
-    <div className="w-full md:w-1/2">
-        <div>
-            <label htmlFor="simple-search" className="sr-only">
-                Pesquisar
-            </label>
-            <div className="relative w-full">
-                <input
-                    type="search"
-                    value={value}
-                    onChange={(e) => onChange(e.target.value)}
-                    onKeyDown={onSubmit}
-                    placeholder="Pesquisar"
-                    className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-gray-700 dark:border-gray-900 dark:text-neutral-400 dark:placeholder-neutral-300 dark:focus:ring-blue-600"
-                />
-            </div>
-        </div>
-    </div>
-);
-
 const ActionButtons = ({
     canCreate,
     canDeleteOrUndelete,
@@ -251,7 +200,15 @@ const ActionButtons = ({
     currentParams,
 }: any) => (
     <div className="flex justify-start md:justify-end flex-shrink-0 w-full md:w-auto md:flex-row md:space-y-0 md:items-center space-x-1">
-        <CreateFlightPlan can_open={canCreate} />
+        {canCreate && (
+            <Button
+                type="button"
+                text="Criar"
+                icon={PlusIcon}
+                onClick={() => router.get(route("flight-plans.create"))}
+                processing={false}
+            />
+        )}
         <DeleteOrUndeleteResource
             can_open={canDeleteOrUndelete}
             reload={reload}
@@ -287,50 +244,6 @@ const ActionButtons = ({
     </div>
 );
 
-const FilterGroup = ({
-    currentGroup,
-    onChange,
-}: {
-    currentGroup: "all" | "active" | "deleted";
-    onChange: (group: "all" | "active" | "deleted") => void;
-}) => {
-    const labels: { [key: string]: string } = {
-        all: "Todos",
-        active: "Ativos",
-        deleted: "Deletados",
-    };
-
-    return (
-        <div className="flex space-x-3">
-            <span className="font-medium text-gray-900 dark:text-white">
-                Filtrar:
-            </span>
-            <div className="flex">
-                {["all", "active", "deleted"].map((group) => (
-                    <div key={group} className="flex items-center me-4">
-                        <input
-                            checked={currentGroup === group}
-                            onClick={() =>
-                                onChange(group as "all" | "active" | "deleted")
-                            }
-                            id={`inline-${group}-radio`}
-                            type="radio"
-                            name="inline-radio-group"
-                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
-                        />
-                        <label
-                            htmlFor={`inline-${group}-radio`}
-                            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                        >
-                            {labels[group]}
-                        </label>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-};
-
 const FlightPlanTable = ({
     flightplans,
     isSelected,
@@ -340,7 +253,7 @@ const FlightPlanTable = ({
 }: any) => (
     <div className="mt-2 overflow-x-auto sm:rounded-lg">
         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead className="text-xs text-gray-800 dark:text-white uppercase bg-gray-100 dark:bg-gray-700">
+            <thead className="text-md text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-700">
                 <tr>
                     <th scope="col" className="px-6 py-3">
                         <div className="flex items-center">
@@ -364,7 +277,7 @@ const FlightPlanTable = ({
                         Status
                     </th>
                     <th scope="col" className="text-right px-6 py-3">
-                        Editar/ Visualizar / Exportar
+                        Editar / Visualizar / Exportar
                     </th>
                 </tr>
             </thead>
@@ -413,13 +326,31 @@ const FlightPlanTable = ({
                                 </div>
                             </td>
                             <td className="flex justify-end gap-x-2 text-left px-6 py-4">
-                                <EditFlightPlan
-                                    id={flightplan.id}
-                                    can_open={canEdit}
+                                <a
+                                    className="inline-flex"
+                                    href={route(
+                                        "flight-plans.edit",
+                                        flightplan.id
+                                    )}
+                                >
+                                    <IconButton
+                                        icon={PenIcon}
+                                    />
+                                </a>
+                                <IconButton
+                                    icon={EyeIcon}
+                                    onClick={() =>
+                                        router.get(
+                                            route(
+                                                "flight-plans.show",
+                                                flightplan.id
+                                            )
+                                        )
+                                    }
                                 />
-                                <ShowFlightPlan id={flightplan.id} />
-                                <ExportFlightPlan
-                                    handleExport={() =>
+                                <IconButton
+                                    icon={ExportFileIcon}
+                                    onClick={() =>
                                         handleExport(
                                             flightplan.name,
                                             flightplan.file
@@ -445,111 +376,3 @@ const FlightPlanTable = ({
         </table>
     </div>
 );
-
-const PaginationInfo = ({ meta }: { meta: any }) => (
-    <nav className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 mt-2">
-        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-            Registros encontrados:{" "}
-            <span className="mx-1 font-semibold text-gray-900 dark:text-white">
-                {meta.total}
-            </span>{" "}
-            | Páginas:{" "}
-            <span className="mx-1 font-semibold text-gray-900 dark:text-white">
-                {meta.last_page}
-            </span>
-        </span>
-    </nav>
-);
-
-const Paginator = ({
-    current_page,
-    pages,
-    changePage,
-}: {
-    current_page: number;
-    pages: number;
-    changePage: (page: number) => void;
-}) => {
-    const getPageNumbers = () => {
-        if (pages <= 3) {
-            return [...Array(pages)].map((_, i) => i + 1);
-        }
-
-        if (current_page <= 3) {
-            return [1, 2, 3, pages];
-        }
-
-        if (current_page > 3 && current_page < pages - 2) {
-            return [current_page - 1, current_page, current_page + 1, pages];
-        }
-
-        return [pages - 2, pages - 1, pages];
-    };
-
-    const pageNumbers = getPageNumbers();
-
-    return (
-        <nav className="mt-4">
-            <ul className="inline-flex items-center -space-x-px">
-                <li>
-                    <button
-                        onClick={() => changePage(1)}
-                        className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        &laquo;
-                    </button>
-                </li>
-                <li>
-                    <button
-                        onClick={() =>
-                            changePage(Math.max(current_page - 1, 1))
-                        }
-                        className="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        &lt;
-                    </button>
-                </li>
-                {pageNumbers.map((page, i) => (
-                    <li key={i}>
-                        {i === 3 &&
-                        pageNumbers.length > 3 &&
-                        current_page <= pages - 3 ? (
-                            <span className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600">
-                                ...
-                            </span>
-                        ) : (
-                            <button
-                                onClick={() => changePage(page)}
-                                className={`px-3 py-2 leading-tight ${
-                                    current_page === page
-                                        ? "text-blue-600 bg-blue-50 dark:bg-gray-600 dark:text-white"
-                                        : "text-gray-500 bg-white dark:bg-gray-700 dark:text-gray-400"
-                                } border border-gray-300 dark:border-gray-600 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-600 dark:hover:text-white`}
-                            >
-                                {page}
-                            </button>
-                        )}
-                    </li>
-                ))}
-                <li>
-                    <button
-                        onClick={() =>
-                            changePage(Math.min(current_page + 1, pages))
-                        }
-                        className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        &gt;
-                    </button>
-                </li>
-                <li>
-                    <button
-                        onClick={() => changePage(pages)}
-                        className="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                        &raquo;
-                    </button>
-                </li>
-            </ul>
-        </nav>
-    );
-};

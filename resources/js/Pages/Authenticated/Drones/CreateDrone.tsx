@@ -1,9 +1,15 @@
-import * as React from 'react';
-import { useForm, Link } from '@inertiajs/react';
-import { AuthenticatedLayout } from '@/Layouts/AuthenticatedLayout';
+import * as React from "react";
+import { useForm, router } from "@inertiajs/react";
+// Custom
+import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
+import { InertiaInput } from "@/Components/Shared/Input/InertiaInput";
+import { InputLabel } from "@/Components/Shared/Label/InputLabel";
+import { InputError } from "@/Components/Shared/Input/InputError";
+import { Breadcrumb } from "@/Components/Shared/Breadcrumb/Breadcrumb";
+import { Button } from "@/Components/Shared/Buttons/Button";
+import { FileInput } from "@/Components/Shared/Input/FileInput";
 
 export default function CreateDrone() {
-
     const { data, setData, post, processing, errors } = useForm({
         name: "",
         manufacturer: "",
@@ -21,102 +27,133 @@ export default function CreateDrone() {
 
     function onChangeImage(e: any) {
         const uploaded_file = e.currentTarget.files[0];
-        if (uploaded_file && uploaded_file.type.startsWith('image/')) {
+        if (uploaded_file && uploaded_file.type.startsWith("image/")) {
             const imgURL = URL.createObjectURL(uploaded_file);
-            setData('image', uploaded_file);
+            setData("image", uploaded_file);
         }
     }
 
     return (
         <AuthenticatedLayout>
-
-            <ol className="flex items-center whitespace-nowrap">
-                <li className="inline-flex items-center">
-                    <a className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                        <svg className="flex-shrink-0 me-3 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        Home
-                    </a>
-                    <svg className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="m9 18 6-6-6-6"></path>
-                    </svg>
-                </li>
-                <li className="inline-flex items-center">
-                    <span className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                        Equipamentos
-                        <svg className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                    </span>
-                </li>
-                <li className="inline-flex items-center">
-                    <span className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                        Drones
-                        <svg className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                    </span>
-                </li>
-                <li className="inline-flex items-center text-sm font-semibold text-gray-800 dark:text-white truncate" aria-current="page">
-                    Criar
-                </li>
-            </ol>
-
+            <Breadcrumb items={["Equipamentos", "Drones", "Criar"]} />
             <section>
                 <div className="py-8 mx-auto max-w-7xl lg:py-16">
-                    <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">Criar Drone</h2>
+                    <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+                        Criar Drone
+                    </h2>
                     <form onSubmit={submit}>
                         <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                             <div className="sm:col-span-1">
-                                <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nome</label>
-                                <input type="text" value={data.name} onChange={e => setData('name', e.target.value)} id="name" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600" placeholder="Informe o nome" />
-                                <span className='text-red-500 text-sm'>{errors.name}</span>
+                                <InputLabel htmlFor="name" text="Nome" />
+                                <InertiaInput
+                                    type="text"
+                                    value={data.name}
+                                    name="name"
+                                    onChange={setData}
+                                    id="name"
+                                    placeholder="Informe o nome completo"
+                                />
+                                <InputError text={errors.name} />
                             </div>
                             <div className="sm:col-span-1">
-                                <label htmlFor="manufacturer" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fabricante</label>
-                                <input type="text" value={data.manufacturer} onChange={e => setData('manufacturer', e.target.value)} id="email" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600" placeholder="Informe o fabricante" />
-                                <span className='text-red-500 text-sm'>{errors.manufacturer}</span>
+                                <InputLabel
+                                    htmlFor="manufacturer"
+                                    text="Fabricante"
+                                />
+                                <InertiaInput
+                                    type="text"
+                                    value={data.manufacturer}
+                                    name="manufacturer"
+                                    onChange={setData}
+                                    id="manufacturer"
+                                    placeholder="Informe o fabricante"
+                                />
+                                <InputError text={errors.manufacturer} />
                             </div>
                             <div className="sm:col-span-1">
-                                <label htmlFor="model" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Modelo</label>
-                                <input type="text" value={data.model} onChange={e => setData('model', e.target.value)} id="email" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600" placeholder="Informe o modelo" />
-                                <span className='text-red-500 text-sm'>{errors.model}</span>
+                                <InputLabel htmlFor="model" text="Modelo" />
+                                <InertiaInput
+                                    type="text"
+                                    value={data.model}
+                                    name="model"
+                                    onChange={setData}
+                                    id="model"
+                                    placeholder="Informe o modelo"
+                                />
+                                <InputError text={errors.model} />
                             </div>
                             <div className="sm:col-span-1">
-                                <label htmlFor="record_number" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Número de Registro</label>
-                                <input type="text" value={data.record_number} onChange={e => setData('record_number', e.target.value)} id="email" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600" placeholder="Informe o número de registro" />
-                                <span className='text-red-500 text-sm'>{errors.record_number}</span>
+                                <InputLabel
+                                    htmlFor="record_number"
+                                    text="Número de Registro"
+                                />
+                                <InertiaInput
+                                    type="text"
+                                    value={data.record_number}
+                                    name="record_number"
+                                    onChange={setData}
+                                    id="record_number"
+                                    placeholder="Informe o número de registro"
+                                />
+                                <InputError text={errors.record_number} />
                             </div>
                             <div className="sm:col-span-1">
-                                <label htmlFor="serial_number" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Número Serial</label>
-                                <input type="text" value={data.serial_number} onChange={e => setData('serial_number', e.target.value)} id="email" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600" placeholder="Informe o número serial" />
-                                <span className='text-red-500 text-sm'>{errors.serial_number}</span>
+                                <InputLabel
+                                    htmlFor="serial_number"
+                                    text="Número Serial"
+                                />
+                                <InertiaInput
+                                    type="text"
+                                    value={data.serial_number}
+                                    name="serial_number"
+                                    onChange={setData}
+                                    id="serial_number"
+                                    placeholder="Informe o número serial"
+                                />
+                                <InputError text={errors.serial_number} />
                             </div>
                             <div className="sm:col-span-1">
-                                <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Peso</label>
-                                <input type="text" value={data.weight} onChange={e => setData('weight', e.target.value)} id="email" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600" placeholder="Informe o peso" />
-                                <span className='text-red-500 text-sm'>{errors.weight}</span>
+                                <InputLabel htmlFor="weight" text="Peso" />
+                                <InertiaInput
+                                    type="text"
+                                    value={data.weight}
+                                    name="weight"
+                                    onChange={setData}
+                                    id="weight"
+                                    placeholder="Informe o peso"
+                                />
+                                <InputError text={errors.weight} />
                             </div>
                             <div className="sm:col-span-1">
-                                <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Imagem (JPG)</label>
-                                <input onChange={onChangeImage} accept=".jpg, .jpeg" className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" />
-                                <span className='text-red-500 text-sm'>{errors.image}</span>
+                                <InputLabel
+                                    htmlFor="image"
+                                    text="Imagem (jpg,jpeg)"
+                                />
+                                <FileInput
+                                    onChange={onChangeImage}
+                                    accept={[".jpg", ".jpeg"]}
+                                    id="image"
+                                />
+                                <InputError text={errors.image} />
                             </div>
                         </div>
-                        <div className='flex justify-end py-3'>
-                            <Link href={route('drones.index')} className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                                Voltar
-                            </Link>
-                            <button disabled={processing} type="submit" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                                {processing ? "Carregando ..." : "Confirmar"}
-                            </button>
+                        <div className="flex justify-end gap-1 py-3">
+                            <Button
+                                type="button"
+                                text="Voltar"
+                                onClick={() =>
+                                    router.get(route("drones.index"))
+                                }
+                            />
+                            <Button
+                                processing={processing}
+                                type="submit"
+                                text="Confirmar"
+                            />
                         </div>
                     </form>
                 </div>
             </section>
-
         </AuthenticatedLayout>
-    )
+    );
 }

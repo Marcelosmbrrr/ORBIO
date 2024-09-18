@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Link, router, useForm } from "@inertiajs/react";
-import { useSnackbar } from "notistack";
+import { router, useForm } from "@inertiajs/react";
 import {
     MapIcon,
     Battery50Icon,
@@ -10,7 +9,14 @@ import {
     PaperAirplaneIcon,
     ExclamationTriangleIcon,
 } from "@heroicons/react/24/solid";
+// Custom
 import { AuthenticatedLayout } from "@/Layouts/AuthenticatedLayout";
+import { Input } from "@/Components/Shared/Input/Input";
+import { InputLabel } from "@/Components/Shared/Label/InputLabel";
+import { Button } from "@/Components/Shared/Buttons/Button";
+import { Breadcrumb } from "@/Components/Shared/Breadcrumb/Breadcrumb";
+import { Alert } from "@/Components/Shared/Alert/Alert";
+
 import { FlightPlanList } from "@/Components/ServiceOrders/Show/FlightPlanList";
 import { DroneList } from "@/Components/ServiceOrders/Show/DroneList";
 import { BatteryList } from "@/Components/ServiceOrders/Show/BatteryList";
@@ -18,7 +24,7 @@ import { EquipmentList } from "@/Components/ServiceOrders/Show/EquipmentList";
 import { LogList } from "@/Components/ServiceOrders/Show/LogList";
 import { ReportList } from "@/Components/ServiceOrders/Show/ReportList";
 import { IncidentList } from "@/Components/ServiceOrders/Show/IncidentList";
-import { Alert } from "@/Components/Alert";
+// Types
 import { ServiceOrderRecord } from "./types";
 
 type List =
@@ -62,9 +68,8 @@ const ShowServiceOrder = React.memo(
     }) => {
         const [list, setList] = React.useState<List>("flightplans");
         const [cancel, setCancel] = React.useState<boolean>(false);
-        const { enqueueSnackbar } = useSnackbar();
 
-        const { patch, setData, data, errors } = useForm({
+        const { patch, setData, data, errors, processing } = useForm({
             situation: "",
             observation: "",
         });
@@ -88,13 +93,7 @@ const ShowServiceOrder = React.memo(
                     preserveScroll: true,
                     onSuccess: () => {
                         setCancel(false);
-                        enqueueSnackbar("Operação bem sucedida!", {
-                            variant: "success",
-                        });
-                    },
-                    onError: () => {
-                        enqueueSnackbar("Erro!", { variant: "error" });
-                    },
+                    }
                 });
             }
         }, [data.situation]);
@@ -125,8 +124,9 @@ const ShowServiceOrder = React.memo(
                                     data.observation.length >= 10 &&
                                     setData("situation", "canceled")
                                 }
+                                disabled={processing}
                             >
-                                Confirmar
+                                {processing ? "Carregando..." : "Confirmar"}
                             </button>
                             <button
                                 onClick={() => setCancel(false)}
@@ -163,8 +163,9 @@ const ShowServiceOrder = React.memo(
                                 onClick={() => setData("situation", "approved")}
                                 type="button"
                                 className="flex items-center focus:outline-none text-white bg-green-600 hover:bg-green-800 font-medium rounded-md text-sm px-5 py-2.5 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                disabled={processing}
                             >
-                                Aprovar
+                                {processing ? "Carregando..." : "Aprovar"}
                             </button>
                             <button
                                 onClick={() => setCancel(true)}
@@ -182,8 +183,9 @@ const ShowServiceOrder = React.memo(
                                 onClick={() => setData("situation", "finished")}
                                 type="button"
                                 className="flex items-center focus:outline-none text-white bg-green-600 hover:bg-green-800 font-medium rounded-md text-sm px-5 py-2.5 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                disabled={processing}
                             >
-                                Finalizar
+                                {processing ? "Carregando..." : "Finalizar"}
                             </button>
                             <button
                                 onClick={() => setCancel(true)}
@@ -221,68 +223,7 @@ const ShowServiceOrder = React.memo(
 
         return (
             <AuthenticatedLayout>
-                <ol className="flex items-center whitespace-nowrap">
-                    <li className="inline-flex items-center">
-                        <a className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                            <svg
-                                className="flex-shrink-0 me-3 size-4"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                            </svg>
-                            Home
-                        </a>
-                        <svg
-                            className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                    </li>
-                    <li className="inline-flex items-center">
-                        <span className="flex items-center text-sm text-gray-500 dark:text-white hover:text-blue-600 focus:outline-none focus:text-blue-600">
-                            Ordens de Serviço
-                            <svg
-                                className="flex-shrink-0 mx-2 overflow-visible size-4 text-gray-400"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            >
-                                <path d="m9 18 6-6-6-6"></path>
-                            </svg>
-                        </span>
-                    </li>
-                    <li
-                        className="inline-flex items-center text-sm font-semibold text-gray-800 dark:text-white truncate"
-                        aria-current="page"
-                    >
-                        Visualizar
-                    </li>
-                </ol>
-
+                <Breadcrumb items={["Ordens de Serviço", "Visualizar"]} />
                 <section>
                     <div className="py-8 mx-auto max-w-7xl lg:py-16">
                         <div className="my-5">
@@ -306,83 +247,60 @@ const ShowServiceOrder = React.memo(
                         <div>
                             <div className="grid gap-4 sm:grid-cols-6 sm:gap-6">
                                 <div className="sm:col-span-2">
-                                    <label
-                                        htmlFor="pilot"
-                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                    >
-                                        Piloto
-                                    </label>
-                                    <input
+                                    <InputLabel htmlFor="pilot" text="Piloto" />
+                                    <Input
                                         readOnly
                                         type="text"
                                         value={serviceorder.data.pilot}
                                         id="pilot"
-                                        className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
-                                        placeholder="Informe o e-mail"
                                     />
                                 </div>
                                 <div className="sm:col-span-2">
-                                    <label
+                                    <InputLabel
                                         htmlFor="client"
-                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                    >
-                                        Cliente
-                                    </label>
-                                    <input
+                                        text="Cliente"
+                                    />
+                                    <Input
                                         readOnly
                                         type="text"
                                         value={serviceorder.data.client}
                                         id="client"
-                                        className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
-                                        placeholder="Informe o e-mail"
                                     />
                                 </div>
                                 <div className="sm:col-span-2">
-                                    <label
+                                    <InputLabel
                                         htmlFor="attendant"
-                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                    >
-                                        Atendente
-                                    </label>
-                                    <input
+                                        text="Atendente"
+                                    />
+                                    <Input
                                         readOnly
                                         type="text"
                                         value={serviceorder.data.attendant}
                                         id="attendant"
-                                        className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
-                                        placeholder="Informe o e-mail"
                                     />
                                 </div>
                                 <div className="sm:col-span-2">
-                                    <label
+                                    <InputLabel
                                         htmlFor="created_at"
-                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                    >
-                                        Criado em
-                                    </label>
-                                    <input
+                                        text="Criado em"
+                                    />
+                                    <Input
                                         readOnly
                                         type="text"
                                         value={serviceorder.data.created_at}
                                         id="created_at"
-                                        className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
-                                        placeholder="Informe o e-mail"
                                     />
                                 </div>
                                 <div className="sm:col-span-2">
-                                    <label
+                                    <InputLabel
                                         htmlFor="updated_at"
-                                        className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                    >
-                                        Atualizado em
-                                    </label>
-                                    <input
+                                        text="Atualizado em"
+                                    />
+                                    <Input
                                         readOnly
                                         type="text"
                                         value={serviceorder.data.updated_at}
                                         id="updated_at"
-                                        className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:placeholder-neutral-300 dark:bg-gray-700 dark:border-gray-800 dark:text-neutral-400 dark:focus:ring-blue-600"
-                                        placeholder="Informe o e-mail"
                                     />
                                 </div>
                             </div>
@@ -461,12 +379,15 @@ const ShowServiceOrder = React.memo(
                             </div>
 
                             <div className="flex justify-end py-3">
-                                <Link
-                                    href={route("service-orders.index")}
-                                    className="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-900 dark:text-white dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                                >
-                                    Voltar
-                                </Link>
+                                <Button
+                                    type="button"
+                                    text="Voltar"
+                                    onClick={() =>
+                                        router.get(
+                                            route("service-orders.index")
+                                        )
+                                    }
+                                />
                             </div>
                         </div>
                     </div>

@@ -171,7 +171,7 @@ class ServiceOrderController extends Controller
             return $service_order;
         });
 
-        return to_route('service-orders.index', ['search' => $service_order->public_id])
+        return to_route('service-orders.index', ['search' => $service_order->public_id->toString()])
             ->with('success', 'A criação da ordem de serviço foi bem sucedida');
     }
 

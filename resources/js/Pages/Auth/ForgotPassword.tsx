@@ -1,17 +1,19 @@
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { FormEventHandler } from 'react';
-import { Alert } from '@/Components/Alert';
+import GuestLayout from "@/Layouts/GuestLayout";
+import { Head, Link, useForm } from "@inertiajs/react";
+import { FormEventHandler } from "react";
+// Custom
+import { InertiaInput } from "@/Components/Shared/Input/InertiaInput";
+import { Alert } from "@/Components/Shared/Alert/Alert";
+import { Button } from "@/Components/Shared/Buttons/Button";
 
 export default function ForgotPassword({ status }: { status?: string }) {
-
     const { data, setData, post, processing, errors } = useForm({
-        email: '',
+        email: "",
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post(route('password.email'));
+        post(route("password.email"));
     };
 
     return (
@@ -19,48 +21,47 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Esqueceu a senha" />
 
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
-                Esqueceu a senha? Informe o e-mail cadastrado abaixo para receber o link de recuperação da sua conta.
+                Esqueceu a senha? Informe o e-mail cadastrado abaixo para
+                receber o link de recuperação da sua conta.
             </div>
 
-            <form onSubmit={submit}>
+            <form className="mb-2" onSubmit={submit}>
                 <div>
-                    <label htmlFor="email" className="block font-medium text-sm text-gray-700 dark:text-gray-300">
+                    <label
+                        htmlFor="email"
+                        className="block font-medium text-sm text-gray-700 dark:text-gray-300"
+                    >
                         E-mail
                     </label>
-                    <input
+                    <InertiaInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-2 w-full border-gray-300 focus:border-blue-500 focus:ring-blue-500 rounded-md shadow-sm"
-                        onChange={(e) => setData('email', e.target.value)}
+                        onChange={setData}
+                        placeholder={"Informe o e-mail"}
                     />
-                    <p className={'text-sm text-red-600 mt-2'}>
+                    <p className={"text-sm text-red-600 mt-2"}>
                         {errors.email}
                     </p>
                 </div>
 
                 <div className="flex items-center justify-end mt-4 gap-x-3">
                     <Link
-                        href={route('login')}
+                        href={route("login")}
                         className="underline text-sm text-gray-600 dark:text-white hover:text-gray-900 rounded-md focus:outline-none"
                     >
                         Voltar
                     </Link>
-                    <button
-                        disabled={processing}
+                    <Button
+                        processing={processing}
                         type="submit"
-                        className="inline-flex items-center px-4 py-2 bg-green-800 border border-transparent rounded-md text-sm font-medium text-white tracking-widest hover:bg-green-700 focus:bg-green-700 active:bg-green-900 focus:outline-none"
-                    >
-                        {processing ? "Carregando..." : "Confirmar"}
-                    </button>
+                        text="Enviar Link"
+                    />
                 </div>
             </form>
 
-            {status && (
-                <Alert message={status} type='success' />
-            )
-            }
+            {status && <Alert message={status} type="success" />}
         </GuestLayout>
     );
 }

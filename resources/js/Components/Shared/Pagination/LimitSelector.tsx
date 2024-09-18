@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
-import { ChevronDownIcon, CheckIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/16/solid'
+import { ChevronDownIcon, CheckIcon } from '@heroicons/react/16/solid'
+import { LimitIcon } from '../Icons/LimitIcon'
 
 interface Option {
     id: string;
@@ -31,9 +32,9 @@ export const LimitSelector = React.memo((props: Props) => {
 
     return (
         <Menu>
-            <MenuButton className="inline-flex items-center gap-2 rounded-md bg-green-600 hover:bg-green-700 py-2 px-4 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-green-700 data-[open]:bg-green-700 data-[focus]:outline-1 data-[focus]:outline-white">
-                <AdjustmentsHorizontalIcon className="size-4 fill-white" />
-                Linhas:
+            <MenuButton className="flex items-center gap-2 focus:outline-none text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                <LimitIcon className="size-4 fill-white" />
+                Linhas
                 <ChevronDownIcon className="size-4 fill-white/60" />
             </MenuButton>
             <Transition
@@ -49,7 +50,7 @@ export const LimitSelector = React.memo((props: Props) => {
                     className="w-52 origin-top-right rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-800 p-1 text-sm/6 text-gray-900 dark:text-white [--anchor-gap:var(--spacing-1)] focus:outline-none"
                 >
                     {options.map((option: Option) =>
-                        <MenuItem>
+                        <MenuItem key={option.id}>
                             <button onClick={() => handleSelection(option.id)} className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10">
                                 {option.id === selected && <CheckIcon className="size-4 fill-gray-900 dark:fill-white" />}
                                 {option.name}

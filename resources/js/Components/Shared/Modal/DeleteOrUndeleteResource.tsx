@@ -1,17 +1,18 @@
-import * as React from 'react';
-import { useForm } from '@inertiajs/react';
-import { Dialog, Transition } from '@headlessui/react'
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline'
+import * as React from "react";
+import { useForm } from "@inertiajs/react";
+import { Dialog, Transition } from "@headlessui/react";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { Button } from "../Buttons/Button";
+import { TrashIcon } from "../Icons/TrashIcon";
 
 interface Props {
     can_open: boolean;
     request_url: string;
     action: "delete" | "undelete";
-    reload: Function
+    reload: Function;
 }
 
 export function DeleteOrUndeleteResource(props: Props) {
-
     const [open, setOpen] = React.useState(false);
     const form = useForm();
 
@@ -23,14 +24,14 @@ export function DeleteOrUndeleteResource(props: Props) {
                 preserveState: false,
                 onSuccess: (e) => {
                     setOpen(false);
-                }
+                },
             });
         } else {
             form.patch(props.request_url, {
                 preserveState: false,
                 onSuccess: () => {
                     setOpen(false);
-                }
+                },
             });
         }
     };
@@ -41,12 +42,13 @@ export function DeleteOrUndeleteResource(props: Props) {
 
     return (
         <>
-            <button onClick={() => setOpen(true)} type="button" className="flex items-center focus:outline-none text-white bg-green-600 hover:bg-green-800 font-medium rounded-md text-sm px-5 py-2.5 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                <svg className="w-3 h-3 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                    <path d="M17 4h-4V2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v2H1a1 1 0 0 0 0 2h1v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1a1 1 0 1 0 0-2ZM7 2h4v2H7V2Zm1 14a1 1 0 1 1-2 0V8a1 1 0 0 1 2 0v8Zm4 0a1 1 0 0 1-2 0V8a1 1 0 0 1 2 0v8Z" />
-                </svg>
-                <span>{props.action === "delete" ? "Deletar" : "Recuperar"}</span>
-            </button>
+            <Button
+                icon={TrashIcon}
+                onClick={() => setOpen(true)}
+                text={props.action === "delete" ? "Deletar" : "Recuperar"}
+                type="button"
+                processing={false}
+            />
 
             <Transition.Root show={open} as={React.Fragment}>
                 <Dialog className="relative z-50" onClose={setOpen}>
@@ -77,27 +79,43 @@ export function DeleteOrUndeleteResource(props: Props) {
                                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                                         <div className="sm:flex sm:items-start">
                                             <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                                                <ExclamationTriangleIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
+                                                <ExclamationTriangleIcon
+                                                    className="h-6 w-6 text-red-600"
+                                                    aria-hidden="true"
+                                                />
                                             </div>
                                             <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                                                <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                                                    {props.action === "delete" ? "Deletar Recurso" : "Recuperar Recurso"}
+                                                <Dialog.Title
+                                                    as="h3"
+                                                    className="text-base font-semibold leading-6 text-gray-900"
+                                                >
+                                                    {props.action === "delete"
+                                                        ? "Deletar Recurso"
+                                                        : "Recuperar Recurso"}
                                                 </Dialog.Title>
                                                 <div className="mt-2">
                                                     <p className="text-sm text-gray-500">
-                                                        {props.action === "delete" ? "Tem certeza que quer deletar os recursos selecionados?" : "Tem certeza que quer recuperar os recursos selecionados?"}
+                                                        {props.action ===
+                                                        "delete"
+                                                            ? "Tem certeza que quer deletar os recursos selecionados?"
+                                                            : "Tem certeza que quer recuperar os recursos selecionados?"}
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <form className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6" onSubmit={submit}>
+                                    <form
+                                        className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6"
+                                        onSubmit={submit}
+                                    >
                                         <button
                                             disabled={form.processing}
                                             type="submit"
                                             className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
                                         >
-                                            {form.processing ? "Carregando ..." : "Confirmar"}
+                                            {form.processing
+                                                ? "Carregando ..."
+                                                : "Confirmar"}
                                         </button>
                                         <button
                                             type="button"
@@ -114,7 +132,5 @@ export function DeleteOrUndeleteResource(props: Props) {
                 </Dialog>
             </Transition.Root>
         </>
-
-
-    )
+    );
 }

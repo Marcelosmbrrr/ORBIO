@@ -53,7 +53,7 @@ class LogController extends Controller
             }
         });
 
-        return redirect()->route('service-orders.show', ['service_order' => $service_order->public_id])
+        return redirect()->route('service-orders.show', ['service_order' => $service_order_id])
             ->with('success', 'A criação dos logs foi bem sucedida');
     }
 
